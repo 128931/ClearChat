@@ -12,7 +12,7 @@ public final class ClearChat implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender.hasPermission("cc.clear")) {
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 1000; i++)
                 broadcastMessage("");
             broadcastMessage(ChatColor.DARK_AQUA + "Chat Cleared by " + sender.getName() + ChatColor.RESET);
         } else sender.sendMessage(ChatColor.RED + "You do not have permission to do that." + ChatColor.RESET);
