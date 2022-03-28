@@ -21,7 +21,7 @@ public final class ClearChat implements CommandExecutor {
         if (sender.hasPermission("cc.global") && args.length == 0) {
             for (int i = 0; i < 1000; i++)
                 broadcastMessage("");
-            broadcastMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + " " + plugin.getConfig().getString("Global").replace("%sender%", sender.getName())));
+            broadcastMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + plugin.getConfig().getString("Global").replace("%sender%", sender.getName())));
         } else if (sender.hasPermission("cc.player") && args.length == 1) {
             for (int i = 0; i < 1000; i++) {
                 if (getPlayer(args[0]) != null && getPlayer(args[0]).isOnline())
@@ -32,7 +32,7 @@ public final class ClearChat implements CommandExecutor {
                 }
             }
             if (getPlayer(args[0]) != null && getPlayer(args[0]).isOnline())
-                getPlayer(args[0]).sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + " " + plugin.getConfig().getString("Player").replace("%sender%", sender.getName())));
+                getPlayer(args[0]).sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + plugin.getConfig().getString("Player").replace("%sender%", sender.getName())));
         } else if (!sender.hasPermission("cc.global") && args.length == 0 || !sender.hasPermission("cc.player") && args.length > 0)
             sender.sendMessage(RED + "You do not have permission to do that" + RESET);
         else if (sender.hasPermission("cc.player") && args.length > 1)
