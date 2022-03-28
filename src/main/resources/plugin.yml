@@ -9,4 +9,4 @@ commands:
   cc:
     description: Clear Global Chat
     usage: /<command>
-    aliases: [clearchat]
+    aliases: [ clearchat ]
