@@ -33,7 +33,7 @@ public final class ChatListener implements CommandExecutor {
             if (getPlayer(args[0]) != null && getPlayer(args[0]).isOnline())
                 getPlayer(args[0]).sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + plugin.getConfig().getString("Player").replace("%sender%", sender.getName())));
         } else if (!sender.hasPermission("cc.global") && args.length == 0 || !sender.hasPermission("cc.player") && args.length > 0)
-            sender.sendMessage(RED + "You do not have permission to do that" + RESET);
+            sender.sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("NoPermission").replace("%sender%", sender.getName())));
         else if (sender.hasPermission("cc.player") && args.length > 1)
             sender.sendMessage(RED + "Please refrain from using 2 or more args" + RESET);
         return true;
