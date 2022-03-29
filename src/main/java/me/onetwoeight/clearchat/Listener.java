@@ -8,11 +8,11 @@ import static org.bukkit.Bukkit.broadcastMessage;
 import static org.bukkit.Bukkit.getPlayer;
 import static org.bukkit.ChatColor.*;
 
-public final class ClearChat implements CommandExecutor {
+public final class Listener implements CommandExecutor {
 
     private final Main plugin;
 
-    public ClearChat(Main plugin) {
+    public Listener(Main plugin) {
         this.plugin = plugin;
     }
 

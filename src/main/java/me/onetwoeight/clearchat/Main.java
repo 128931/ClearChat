@@ -11,7 +11,7 @@ public final class Main extends JavaPlugin {
         String version = file.getVersion();
         String name = file.getName();
         saveDefaultConfig();
-        getCommand("cc").setExecutor(new ClearChat(this));
+        getCommand("cc").setExecutor(new Listener(this));
         getLogger().info(name + " v" + version + " Enabled");
     }
 

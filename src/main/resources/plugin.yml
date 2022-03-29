@@ -2,11 +2,11 @@ name: ClearChat
 main: me.onetwoeight.clearchat.Main
 version: $version
 website: https://github.com/128931/ClearChat
-description: Plugin for clearing Global Chat
+description: Plugin for clearing a player's chat or global chat
 author: '12893'
 api-version: 1.13
 commands:
   cc:
-    description: Clear Global Chat
+    description: Clears a player's chat or global chat
     usage: /<command>
     aliases: [ clearchat ]
