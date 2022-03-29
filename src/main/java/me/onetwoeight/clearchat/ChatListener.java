@@ -8,11 +8,11 @@ import static org.bukkit.Bukkit.broadcastMessage;
 import static org.bukkit.Bukkit.getPlayer;
 import static org.bukkit.ChatColor.*;
 
-public final class Listener implements CommandExecutor {
+public final class ChatListener implements CommandExecutor {
 
     private final Main plugin;
 
-    public Listener(Main plugin) {
+    public ChatListener(Main plugin) {
         this.plugin = plugin;
     }
 
@@ -23,14 +23,13 @@ public final class Listener implements CommandExecutor {
                 broadcastMessage("");
             broadcastMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + plugin.getConfig().getString("Global").replace("%sender%", sender.getName())));
         } else if (sender.hasPermission("cc.player") && args.length == 1) {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 1000; i++)
                 if (getPlayer(args[0]) != null && getPlayer(args[0]).isOnline())
                     getPlayer(args[0]).sendMessage("");
                 else {
                     sender.sendMessage(RED + "Could not find specified player" + RESET);
                     break;
                 }
-            }
             if (getPlayer(args[0]) != null && getPlayer(args[0]).isOnline())
                 getPlayer(args[0]).sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + plugin.getConfig().getString("Player").replace("%sender%", sender.getName())));
         } else if (!sender.hasPermission("cc.global") && args.length == 0 || !sender.hasPermission("cc.player") && args.length > 0)

@@ -1,11 +1,11 @@
 # Config variables:
-# %sender% - User/Person that executed the cc command.
+# %sender% - Person/Thing that executed the command.
 
-# Change the prefix of the plugin.
+# The prefix of the plugin at the beginning of each message.
 Prefix: '&c&l[&3ClearChat&c&l]&r '
 
-# Change the message after clearing global chat.
+# The message to be sent after clearing global chat.
 Global: '&cThe chat was cleared by %sender%&r'
 
-# Change the message after clearing a player's chat.
+# The message to be sent after clearing a player's chat.
 Player: '&cYour chat was cleared by %sender%&r'
