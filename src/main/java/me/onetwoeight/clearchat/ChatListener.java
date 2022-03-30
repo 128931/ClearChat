@@ -3,6 +3,7 @@ package me.onetwoeight.clearchat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -18,9 +19,8 @@ public final class ChatListener implements CommandExecutor {
         this.plugin = plugin;
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
         if (sender.hasPermission("cc.global") && args.length == 0) {
             for (int i = 0; i < 1000; i++) {
                 broadcastMessage("");

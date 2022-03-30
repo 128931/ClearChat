@@ -7,11 +7,12 @@ import java.util.Objects;
 
 public final class Main extends JavaPlugin {
 
+    private final PluginDescriptionFile file = getDescription();
+    private final String version = file.getVersion();
+    private final String name = file.getName();
+
     @Override
     public void onEnable() {
-        PluginDescriptionFile file = getDescription();
-        String version = file.getVersion();
-        String name = file.getName();
         saveDefaultConfig();
         Objects.requireNonNull(getCommand("cc"), "Executor must not be null").setExecutor(new ChatListener(this));
         getLogger().info(name + " v" + version + " Enabled");
@@ -19,6 +20,6 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        getLogger().info(name + " v" + version + " Disabled");
     }
 }
