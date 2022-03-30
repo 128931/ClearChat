@@ -25,7 +25,7 @@ public final class ChatListener implements CommandExecutor {
             for (int i = 0; i < 1000; i++) {
                 broadcastMessage("");
             }
-            broadcastMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + Objects.requireNonNull(plugin.getConfig().getString("Global"), "global replace target/replacement must not be null").replace("%sender%", sender.getName())));
+            broadcastMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + Objects.requireNonNull(plugin.getConfig().getString("Global"), "replace target/replacement must not be null").replace("%sender%", sender.getName())));
         } else if (sender.hasPermission("cc.player") && args.length == 1) {
             for (int i = 0; i < 1000; i++) {
                 if (getPlayer(args[0]) != null && Objects.requireNonNull(getPlayer(args[0]), "player must not be null").isOnline()) {
@@ -36,10 +36,10 @@ public final class ChatListener implements CommandExecutor {
                 }
             }
             if (getPlayer(args[0]) != null && Objects.requireNonNull(getPlayer(args[0]), "player must not be null").isOnline()) {
-                Objects.requireNonNull(getPlayer(args[0]), "player must not be null").sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + Objects.requireNonNull(plugin.getConfig().getString("Player"), "player replace target/replacement must not be null").replace("%sender%", sender.getName())));
+                Objects.requireNonNull(getPlayer(args[0]), "player must not be null").sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + Objects.requireNonNull(plugin.getConfig().getString("Player"), "replace target/replacement must not be null").replace("%sender%", sender.getName())));
             }
         } else if (!sender.hasPermission("cc.global") && args.length == 0 || !sender.hasPermission("cc.player") && args.length > 0) {
-            sender.sendMessage(translateAlternateColorCodes('&', Objects.requireNonNull(plugin.getConfig().getString("NoPermission"), "no permission target/replacement must not be null").replace("%sender%", sender.getName())));
+            sender.sendMessage(translateAlternateColorCodes('&', Objects.requireNonNull(plugin.getConfig().getString("NoPermission"), "target/replacement must not be null").replace("%sender%", sender.getName())));
         } else if (sender.hasPermission("cc.player") && args.length > 1) {
             sender.sendMessage(RED + "Please refrain from using 2 or more args" + RESET);
         }

@@ -11,4 +11,4 @@ Global: '&cThe chat was cleared by %sender%&r'
 Player: '&cYour chat was cleared by %sender%&r'
 
 # The message to be sent when someone that executed the command doesn't have the permissions for it.
-NoPermission: '&c%sender% You do not have permission to do that&r'
+NoPermission: '&cYou do not have permission to do that&r'
