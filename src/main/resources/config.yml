@@ -1,6 +1,8 @@
 # Config variables:
 # %sender% - Person/Thing that executed the command.
 
+# For Color Codes: https://htmlcolorcodes.com/bukkit-color-codes/
+
 # The prefix of the plugin at the beginning of each message.
 Prefix: '&c&l[&3ClearChat&c&l]&r '
 
