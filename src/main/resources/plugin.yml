@@ -3,7 +3,7 @@ name: ClearChat
 version: $version
 description: Plugin for clearing a player's chat or global chat
 load: STARTUP
-author: '12893'
+author: 'onetwoeight'
 website: https://github.com/128931/ClearChat
 api-version: 1.13
 commands:
