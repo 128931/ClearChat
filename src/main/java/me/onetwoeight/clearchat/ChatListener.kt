@@ -15,8 +15,8 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
             }
             Bukkit.broadcastMessage(
                 ChatColor.translateAlternateColorCodes(
-                    '&', plugin.config.getString("Prefix") +
-                            plugin.config.getString("Global")
+                    '&',
+                    plugin.config.getString("Prefix") + plugin.config.getString("Global")
                 ).replace("%sender%", sender.name)
             )
         } else if (sender.hasPermission("cc.player") && args.size == 1) {
@@ -31,9 +31,11 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
             if (Bukkit.getPlayer(args[0]) != null && Bukkit.getPlayer(args[0])?.isOnline == true) {
                 Bukkit.getPlayer(args[0])?.sendMessage(
                     ChatColor.translateAlternateColorCodes(
-                        '&', plugin.config.getString("Prefix") + (
-                                plugin.config.getString("Player")
-                                )?.replace("%sender%", sender.name)
+                        '&',
+                        plugin.config.getString("Prefix") + (plugin.config.getString("Player"))?.replace(
+                            "%sender%",
+                            sender.name
+                        )
                     )
                 )
             }
