@@ -9,6 +9,5 @@ api-version: 1.13
 commands:
   cc:
     description: Clears a player's chat or global chat
-    aliases:
-      - clearchat
+    aliases: [ clearchat ]
     usage: /<command>

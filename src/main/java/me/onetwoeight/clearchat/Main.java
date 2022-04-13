@@ -14,7 +14,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        requireNonNull(getCommand("cc"), "Executor must not be null").setExecutor(new ChatListener(this));
+        requireNonNull(getCommand("cc"), "getCommand must not be null").setExecutor(new ChatListener(this));
         getLogger().info(name + " v" + version + " Enabled");
     }
 

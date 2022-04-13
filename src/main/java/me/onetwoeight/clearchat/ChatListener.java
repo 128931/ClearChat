@@ -24,21 +24,21 @@ final class ChatListener implements CommandExecutor {
             for (int i = 0; i < 1000; i++) {
                 broadcastMessage("");
             }
-            broadcastMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + requireNonNull(plugin.getConfig().getString("Global"), "replace target/replacement must not be null").replace("%sender%", sender.getName())));
+            broadcastMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + requireNonNull(plugin.getConfig().getString("Global"), "getString must not be null").replace("%sender%", sender.getName())));
         } else if (sender.hasPermission("cc.player") && args.length == 1) {
             for (int i = 0; i < 1000; i++) {
-                if (getPlayer(args[0]) != null && requireNonNull(getPlayer(args[0]), "player must not be null").isOnline()) {
-                    requireNonNull(getPlayer(args[0]), "player must not be null").sendMessage("");
+                if (getPlayer(args[0]) != null && requireNonNull(getPlayer(args[0]), "getPlayer must not be null").isOnline()) {
+                    requireNonNull(getPlayer(args[0]), "getPlayer must not be null").sendMessage("");
                 } else {
                     sender.sendMessage(RED + "Could not find specified player" + RESET);
                     break;
                 }
             }
-            if (getPlayer(args[0]) != null && requireNonNull(getPlayer(args[0]), "player must not be null").isOnline()) {
-                requireNonNull(getPlayer(args[0]), "player must not be null").sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + requireNonNull(plugin.getConfig().getString("Player"), "replace target/replacement must not be null").replace("%sender%", sender.getName())));
+            if (getPlayer(args[0]) != null && requireNonNull(getPlayer(args[0]), "getPlayer must not be null").isOnline()) {
+                requireNonNull(getPlayer(args[0]), "getPlayer must not be null").sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + requireNonNull(plugin.getConfig().getString("Player"), "getString must not be null").replace("%sender%", sender.getName())));
             }
         } else if (!sender.hasPermission("cc.global") && args.length == 0 || !sender.hasPermission("cc.player") && args.length > 0) {
-            sender.sendMessage(translateAlternateColorCodes('&', requireNonNull(plugin.getConfig().getString("NoPermission"), "target/replacement must not be null").replace("%sender%", sender.getName())));
+            sender.sendMessage(translateAlternateColorCodes('&', requireNonNull(plugin.getConfig().getString("NoPermission"), "getString must not be null").replace("%sender%", sender.getName())));
         } else if (sender.hasPermission("cc.player") && args.length > 1) {
             sender.sendMessage(RED + "Please refrain from using 2 or more args" + RESET);
         }
