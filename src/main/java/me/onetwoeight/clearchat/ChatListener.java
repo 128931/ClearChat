@@ -25,6 +25,7 @@ final class ChatListener implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
         String player = "cc.player";
+        String global = "cc.global";
         String send = "%sender%";
         String prefix = "Prefix";
         String getPlayer = "getPlayer must not be null";
@@ -47,7 +48,7 @@ final class ChatListener implements CommandExecutor {
                 requireNonNull(getPlayer(args[0]), getPlayer).sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString(prefix) + requireNonNull(plugin.getConfig().getString("Player"), getString).replace(send, sender.getName())));
                 sender.sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString(prefix) + requireNonNull(plugin.getConfig().getString("Success"), getString).replace("%person%", args[0])));
             }
-        } else if (!sender.hasPermission("cc.global") && args.length == 0 || !sender.hasPermission(player) && args.length > 0) {
+        } else if (!sender.hasPermission(global) && args.length == 0 || !sender.hasPermission(player) && args.length > 0) {
             sender.sendMessage(translateAlternateColorCodes('&', requireNonNull(plugin.getConfig().getString("NoPermission"), getString).replace(send, sender.getName())));
         } else if (sender.hasPermission(player) && args.length > 1) {
             sender.sendMessage(RED + "Please refrain from using 2 or more args" + RESET);
