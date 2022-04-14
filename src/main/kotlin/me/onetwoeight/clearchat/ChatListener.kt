@@ -6,6 +6,10 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 
+/**
+ * @author onetwoeight
+ * @since 4/14/2022
+ */
 internal class ChatListener(private val plugin: Main) : CommandExecutor {
 
     private val prefix = "Prefix"

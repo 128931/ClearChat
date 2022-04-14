@@ -2,6 +2,10 @@ package me.onetwoeight.clearchat
 
 import org.bukkit.plugin.java.JavaPlugin
 
+/**
+ * @author onetwoeight
+ * @since 4/14/2022
+ */
 class Main : JavaPlugin() {
 
     override fun onEnable() {
