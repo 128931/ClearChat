@@ -9,10 +9,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
     steps:
       - uses: actions/checkout@v2
         with:
@@ -21,6 +17,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Allow for use of gradlew
+        run: chmod +x gradlew
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
