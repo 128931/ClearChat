@@ -12,12 +12,11 @@ import org.bukkit.command.CommandSender
  */
 internal class ChatListener(private val plugin: Main) : CommandExecutor {
 
-    private val prefix = "Prefix"
-    private val send = "%sender%"
-    private val global = "cc.global"
-    private val player = "cc.player"
-
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
+        val prefix = "Prefix"
+        val send = "%sender%"
+        val global = "cc.global"
+        val player = "cc.player"
         if (sender.hasPermission(global) && args.isEmpty()) {
             for (i in 0..999) {
                 Bukkit.broadcastMessage("")
