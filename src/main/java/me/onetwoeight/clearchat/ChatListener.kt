@@ -21,20 +21,29 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
             )
         } else if (sender.hasPermission("cc.player") && args.size == 1) {
             for (i in 0..999) {
-                if (Bukkit.getPlayer(args[0]) != null && Bukkit.getPlayer(args[0])?.isOnline == true) {
+                if (Bukkit.getPlayer(args[0])?.isOnline == true) {
                     Bukkit.getPlayer(args[0])?.sendMessage("")
                 } else {
                     sender.sendMessage(ChatColor.RED.toString() + "Could not find specified player" + ChatColor.RESET)
                     break
                 }
             }
-            if (Bukkit.getPlayer(args[0]) != null && Bukkit.getPlayer(args[0])?.isOnline == true) {
+            if (Bukkit.getPlayer(args[0])?.isOnline == true) {
                 Bukkit.getPlayer(args[0])?.sendMessage(
                     ChatColor.translateAlternateColorCodes(
                         '&',
-                        plugin.config.getString("Prefix") + (plugin.config.getString("Player"))?.replace(
+                        plugin.config.getString("Prefix") + plugin.config.getString("Player")?.replace(
                             "%sender%",
                             sender.name
+                        )
+                    )
+                )
+                sender.sendMessage(
+                    ChatColor.translateAlternateColorCodes(
+                        '&',
+                        plugin.config.getString("Prefix") + plugin.config.getString("Success")?.replace(
+                            "%person%",
+                            args[0]
                         )
                     )
                 )
