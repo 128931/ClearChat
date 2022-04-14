@@ -1,5 +1,6 @@
 plugins {
     `java-library`
+    id("org.sonarqube") version ("3.3")
 }
 
 group = "me.onetwoeight"
@@ -41,5 +42,13 @@ tasks {
     }
     test {
         useJUnitPlatform()
+    }
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "128931_ClearChat")
+        property("sonar.organization", "128931")
+        property("sonar.host.url", "https://sonarcloud.io")
     }
 }
