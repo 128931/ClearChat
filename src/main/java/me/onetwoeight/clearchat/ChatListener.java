@@ -10,6 +10,10 @@ import static org.bukkit.Bukkit.broadcastMessage;
 import static org.bukkit.Bukkit.getPlayer;
 import static org.bukkit.ChatColor.*;
 
+/**
+ * @author onetwoeight
+ * @since 3/27/2022
+ */
 final class ChatListener implements CommandExecutor {
 
     private final Main plugin;

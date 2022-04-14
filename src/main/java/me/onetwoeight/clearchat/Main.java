@@ -5,6 +5,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * @author onetwoeight
+ * @since 3/27/2022
+ */
 public final class Main extends JavaPlugin {
 
     private final PluginDescriptionFile file = getDescription();
