@@ -3,6 +3,8 @@ package me.onetwoeight.clearchat;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Level;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -19,11 +21,11 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         requireNonNull(getCommand("cc"), "getCommand must not be null").setExecutor(new ChatListener(this));
-        getLogger().info(name + " v" + version + " Enabled");
+        getLogger().log(Level.INFO, () -> name + " v" + version + " Enabled"); // since Java 8, we can use Supplier, which will be evaluated lazily
     }
 
     @Override
     public void onDisable() {
-        getLogger().info(name + " v" + version + " Disabled");
+        getLogger().log(Level.INFO, () -> name + " v" + version + " Disabled"); // since Java 8, we can use Supplier, which will be evaluated lazily
     }
 }
