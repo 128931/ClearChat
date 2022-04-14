@@ -36,6 +36,7 @@ final class ChatListener implements CommandExecutor {
             }
             if (getPlayer(args[0]) != null && requireNonNull(getPlayer(args[0]), "getPlayer must not be null").isOnline()) {
                 requireNonNull(getPlayer(args[0]), "getPlayer must not be null").sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + requireNonNull(plugin.getConfig().getString("Player"), "getString must not be null").replace("%sender%", sender.getName())));
+                sender.sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + requireNonNull(plugin.getConfig().getString("Success"), "getString must not be null").replace("%person%", args[0])));
             }
         } else if (!sender.hasPermission("cc.global") && args.length == 0 || !sender.hasPermission("cc.player") && args.length > 0) {
             sender.sendMessage(translateAlternateColorCodes('&', requireNonNull(plugin.getConfig().getString("NoPermission"), "getString must not be null").replace("%sender%", sender.getName())));
