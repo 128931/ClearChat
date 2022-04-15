@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `java-library`
     kotlin("jvm") version "1.6.20"
+    id("org.sonarqube") version "3.3"
 }
 
 group = "me.onetwoeight"
@@ -58,6 +59,14 @@ tasks {
             "META-INF/versions/**"
         )
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "128931_ClearChat")
+        property("sonar.organization", "128931")
+        property("sonar.host.url", "https://sonarcloud.io")
     }
 }
 
