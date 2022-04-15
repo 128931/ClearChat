@@ -30,7 +30,7 @@ final class ChatListener implements CommandExecutor {
         String prefix = "Prefix";
         String getPlayer = "getPlayer must not be null";
         String getString = "getString must not be null";
-        if (sender.hasPermission("cc.global") && args.length == 0) {
+        if (sender.hasPermission(global) && args.length == 0) {
             for (int i = 0; i < 1000; i++) {
                 broadcastMessage("");
             }
