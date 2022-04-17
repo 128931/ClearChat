@@ -19,6 +19,7 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         requireNonNull(getCommand("cc"), "Expression 'getCommand(\"cc\")' must not be null").setExecutor(new ChatListener(this));
+        new Metrics(this, 14968);
         getLogger().info(() -> name + " v" + version + " Enabled"); // since Java 8, we can use Supplier, which will be evaluated lazily
     }
 
