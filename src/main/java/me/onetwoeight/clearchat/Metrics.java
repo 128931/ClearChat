@@ -378,9 +378,9 @@ public final class Metrics {
                     return null;
                 }
                 builder.appendField("data", data);
-            } catch (Throwable t) {
+            } catch (Exception e) {
                 if (logErrors) {
-                    errorLogger.accept("Failed to get data for custom chart with id " + chartId, t);
+                    errorLogger.accept("Failed to get data for custom chart with id " + chartId, e);
                 }
                 return null;
             }
