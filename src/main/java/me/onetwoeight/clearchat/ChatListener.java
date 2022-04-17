@@ -28,8 +28,8 @@ final class ChatListener implements CommandExecutor {
         String global = "cc.global";
         String send = "%sender%";
         String prefix = "Prefix";
-        String getPlayer = "getPlayer must not be null";
-        String getString = "getString must not be null";
+        String getPlayer = "Expression 'getPlayer(args[0])' must not be null";
+        String getString = "Expression 'plugin.getConfig().getString(\"String Path\")' must not be null";
         if (sender.hasPermission(global) && args.length == 0) {
             for (int i = 0; i < 1000; i++) {
                 broadcastMessage("");
