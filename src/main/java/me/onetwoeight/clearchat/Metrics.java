@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -120,7 +121,7 @@ public final class Metrics {
             return onlinePlayersMethod.getReturnType().equals(Collection.class)
                     ? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).size()
                     : ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer())).length;
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             // Just use the new method if the reflection failed
             return Bukkit.getOnlinePlayers().size();
         }
@@ -291,7 +292,7 @@ public final class Metrics {
                         try {
                             // Send the data
                             sendData(data);
-                        } catch (Exception e) {
+                        } catch (IOException e) {
                             // Something went wrong! :(
                             if (logErrors) {
                                 errorLogger.accept("Could not submit bStats metrics data", e);
@@ -377,7 +378,7 @@ public final class Metrics {
                     return null;
                 }
                 builder.appendField("data", data);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 if (logErrors) {
                     errorLogger.accept("Failed to get data for custom chart with id " + chartId, e);
                 }
