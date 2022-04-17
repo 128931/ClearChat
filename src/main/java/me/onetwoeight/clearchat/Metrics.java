@@ -81,7 +81,7 @@ public final class Metrics {
                         submitDataTask -> Bukkit.getScheduler().runTask(plugin, submitDataTask),
                         plugin::isEnabled,
                         (message, error) -> this.plugin.getLogger().log(Level.WARNING, message, error),
-                        (message) -> this.plugin.getLogger().log(Level.INFO, message),
+                        message -> this.plugin.getLogger().log(Level.INFO, message),
                         logErrors,
                         logSentData,
                         logResponseStatusText);
@@ -115,8 +115,7 @@ public final class Metrics {
     private int getPlayerAmount() {
         try {
             // Around MC 1.8 the return type was changed from an array to a collection,
-            // This fixes java.lang.NoSuchMethodError:
-            // org.bukkit.Bukkit.getOnlinePlayers()Ljava/util/Collection;
+            // This fixes java.lang.NoSuchMethodError
             Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
             return onlinePlayersMethod.getReturnType().equals(Collection.class)
                     ? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).size()
@@ -268,7 +267,7 @@ public final class Metrics {
             long secondDelay = (long) (1000 * 60 * (Math.random() * 30));
             scheduler.schedule(submitTask, initialDelay, TimeUnit.MILLISECONDS);
             scheduler.scheduleAtFixedRate(
-                    submitTask, initialDelay + secondDelay, 1000 * 60 * 30, TimeUnit.MILLISECONDS);
+                    submitTask, initialDelay + secondDelay, 1_800_000L, TimeUnit.MILLISECONDS);
         }
 
         private void submitData() {
@@ -301,7 +300,7 @@ public final class Metrics {
                     });
         }
 
-        private void sendData(JsonObjectBuilder.JsonObject data) throws Exception {
+        private void sendData(JsonObjectBuilder.JsonObject data) throws IOException {
             if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: " + data.toString());
             }
@@ -387,7 +386,7 @@ public final class Metrics {
             return builder.build();
         }
 
-        protected abstract JsonObjectBuilder.JsonObject getChartData() throws Exception;
+        protected abstract JsonObjectBuilder.JsonObject getChartData() throws IOException;
     }
 
     /**
