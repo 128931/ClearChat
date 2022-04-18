@@ -217,7 +217,7 @@ public final class Metrics {
         @SuppressWarnings("SpellCheckingInspection")
         private static byte[] compress(final String str) throws IOException {
             if (str == null) {
-                return null;
+                return new byte[0];
             }
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try (GZIPOutputStream gzip = new GZIPOutputStream(outputStream)) {
