@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -248,8 +249,9 @@ public final class Metrics {
             // WARNING: You must not modify and part of this Metrics class, including the submit delay or
             // frequency!
             // WARNING: Modifying this code will get your plugin banned on bStats. Just don't do it!
-            long initialDelay = (long) (1000 * 60 * (3 + Math.random() * 3));
-            long secondDelay = (long) (1000 * 60 * (Math.random() * 30));
+            SecureRandom random = new SecureRandom();
+            long initialDelay = (long) (1000 * 60 * (3 + random.nextDouble() * 3));
+            long secondDelay = (long) (1000 * 60 * (random.nextDouble() * 30));
             scheduler.schedule(submitTask, initialDelay, TimeUnit.MILLISECONDS);
             scheduler.scheduleAtFixedRate(
                     submitTask, initialDelay + secondDelay, 1_800_000L, TimeUnit.MILLISECONDS);
