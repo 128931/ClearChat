@@ -24,6 +24,12 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * Code Cleaned up by 128931 at 4/18/2022
+ *
+ * @author BtoBastian
+ * @since 2/17/2017
+ */
 public final class Metrics {
 
     private final Plugin plugin;

@@ -19,6 +19,9 @@ public final class ChatListener implements CommandExecutor {
 
     private final Main plugin;
 
+    /**
+     * @param plugin The plugin
+     */
     public ChatListener(final Main plugin) {
         this.plugin = plugin;
     }
