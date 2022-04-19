@@ -62,7 +62,7 @@ public final class Metrics {
             try {
                 config.save(configFile);
             } catch (IOException e) {
-                e.printStackTrace();
+                this.plugin.getLogger().log(Level.WARNING, e.toString());
             }
         }
         // Load the data
