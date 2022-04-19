@@ -41,9 +41,10 @@ public final class Metrics {
         File bStatsFolder = new File(plugin.getDataFolder().getParentFile(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-        if (!config.isSet("serverUuid")) {
+        String serverUuid = "serverUuid";
+        if (!config.isSet(serverUuid)) {
             config.addDefault("enabled", true);
-            config.addDefault("serverUuid", UUID.randomUUID().toString());
+            config.addDefault(serverUuid, UUID.randomUUID().toString());
             config.addDefault("logFailedRequests", false);
             config.addDefault("logSentData", false);
             config.addDefault("logResponseStatusText", false);
@@ -67,7 +68,7 @@ public final class Metrics {
         }
         // Load the data
         boolean enabled = config.getBoolean("enabled", true);
-        String serverUUID = config.getString("serverUuid");
+        String serverUUID = config.getString(serverUuid);
         boolean logErrors = config.getBoolean("logFailedRequests", false);
         boolean logSentData = config.getBoolean("logSentData", false);
         boolean logResponseStatusText = config.getBoolean("logResponseStatusText", false);
