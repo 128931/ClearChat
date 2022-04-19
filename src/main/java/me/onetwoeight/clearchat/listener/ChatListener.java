@@ -1,5 +1,6 @@
-package me.onetwoeight.clearchat;
+package me.onetwoeight.clearchat.listener;
 
+import me.onetwoeight.clearchat.Main;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +15,7 @@ import static org.bukkit.ChatColor.*;
  * @author onetwoeight
  * @since 3/27/2022
  */
-final class ChatListener implements CommandExecutor {
+public final class ChatListener implements CommandExecutor {
 
     private final Main plugin;
 
