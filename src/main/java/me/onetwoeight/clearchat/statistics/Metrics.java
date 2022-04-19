@@ -13,8 +13,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -41,6 +41,7 @@ public final class Metrics {
      * @param serviceId The id of the service. It can be found at <a
      *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
+    @SuppressWarnings("deprecation")
     public Metrics(final JavaPlugin plugin, final int serviceId) {
         this.plugin = plugin;
         // Get the config file
@@ -55,7 +56,6 @@ public final class Metrics {
             config.addDefault("logSentData", false);
             config.addDefault("logResponseStatusText", false);
             // Inform the server owners about bStats
-            //noinspection deprecation
             config
                     .options()
                     // Some servers are still on older versions using snakeyaml 1.15, so we have to use this deprecated method in 1.30
@@ -265,13 +265,20 @@ public final class Metrics {
                     submitTask, initialDelay + secondDelay, 1_800_000L, TimeUnit.MILLISECONDS);
         }
 
+        @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "RedundantOperationOnEmptyContainer"})
         private void submitData() {
             final JsonObjectBuilder baseJsonBuilder = new JsonObjectBuilder();
             appendPlatformDataConsumer.accept(baseJsonBuilder);
             final JsonObjectBuilder serviceJsonBuilder = new JsonObjectBuilder();
             appendServiceDataConsumer.accept(serviceJsonBuilder);
+            Set<CustomChart> customCharts = new HashSet<>();
+            final JsonObjectBuilder.JsonObject[] chartData =
+                    customCharts.stream()
+                            .map(customChart -> customChart.getRequestJsonObject(errorLogger, logErrors))
+                            .filter(Objects::nonNull)
+                            .toArray(JsonObjectBuilder.JsonObject[]::new);
             serviceJsonBuilder.appendField("id", serviceId);
-            serviceJsonBuilder.appendField("customCharts", "");
+            serviceJsonBuilder.appendField("customCharts", chartData);
             baseJsonBuilder.appendField("service", serviceJsonBuilder.build());
             baseJsonBuilder.appendField("serverUUID", serverUuid);
             baseJsonBuilder.appendField("metricsVersion", METRICS_VERSION);
@@ -369,6 +376,21 @@ public final class Metrics {
         }
 
         /**
+         * Appends an object array to the JSON.
+         *
+         * @param key    The key of the field.
+         * @param values The integer array.
+         */
+        public void appendField(final String key, final JsonObject[] values) {
+            if (values == null) {
+                throw new IllegalArgumentException("JSON values must not be null");
+            }
+            final String escapedValues =
+                    Arrays.stream(values).map(JsonObject::toString).collect(Collectors.joining(","));
+            appendFieldUnescaped(key, "[" + escapedValues + "]");
+        }
+
+        /**
          * Appends a string field to the JSON.
          *
          * @param key   The key of the field.
@@ -458,5 +480,39 @@ public final class Metrics {
                 return value;
             }
         }
+    }
+
+    public abstract static class CustomChart {
+
+        private final String chartId;
+
+        protected CustomChart(final String chartId) {
+            if (chartId == null) {
+                throw new IllegalArgumentException("chartId must not be null");
+            }
+            this.chartId = chartId;
+        }
+
+        public JsonObjectBuilder.JsonObject getRequestJsonObject(
+                final BiConsumer<String, Throwable> errorLogger, final boolean logErrors) {
+            final JsonObjectBuilder builder = new JsonObjectBuilder();
+            builder.appendField("chartId", chartId);
+            try {
+                final JsonObjectBuilder.JsonObject data = getChartData();
+                if (data == null) {
+                    // If the data is null we don't send the chart.
+                    return null;
+                }
+                builder.appendField("data", data);
+            } catch (final Exception e) {
+                if (logErrors) {
+                    errorLogger.accept("Failed to get data for custom chart with id " + chartId, e);
+                }
+                return null;
+            }
+            return builder.build();
+        }
+
+        protected abstract JsonObjectBuilder.JsonObject getChartData() throws Exception;
     }
 }
