@@ -41,12 +41,11 @@ public final class ChatListener implements CommandExecutor {
             broadcastMessage(translateAlternateColorCodes('&', plugin.getConfig().getString(prefix) + requireNonNull(plugin.getConfig().getString("Global"), getString).replace(send, sender.getName())));
         } else if (sender.hasPermission(player) && args.length == 1) {
             for (int i = 0; i < 1000; i++) {
-                if (getPlayer(args[0]) != null && requireNonNull(getPlayer(args[0]), getPlayer).isOnline()) {
-                    requireNonNull(getPlayer(args[0]), getPlayer).sendMessage("");
-                } else {
+                if (getPlayer(args[0]) == null || !requireNonNull(getPlayer(args[0]), getPlayer).isOnline()) {
                     sender.sendMessage(RED + "Could not find specified player" + RESET);
                     break;
                 }
+                requireNonNull(getPlayer(args[0]), getPlayer).sendMessage("");
             }
             if (getPlayer(args[0]) != null && requireNonNull(getPlayer(args[0]), getPlayer).isOnline()) {
                 requireNonNull(getPlayer(args[0]), getPlayer).sendMessage(translateAlternateColorCodes('&', plugin.getConfig().getString(prefix) + requireNonNull(plugin.getConfig().getString("Player"), getString).replace(send, sender.getName())));
