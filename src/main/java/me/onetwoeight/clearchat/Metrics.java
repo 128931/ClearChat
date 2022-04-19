@@ -61,7 +61,8 @@ public final class Metrics {
                     .copyDefaults(true);
             try {
                 config.save(configFile);
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         // Load the data
@@ -231,7 +232,7 @@ public final class Metrics {
         private void startSubmitting() {
             final Runnable submitTask =
                     () -> {
-                        if (!enabled || !checkServiceEnabledSupplier.get()) {
+                        if (!enabled || Boolean.FALSE.equals(checkServiceEnabledSupplier.get())) {
                             // Submitting data or service is disabled
                             scheduler.shutdown();
                             return;
