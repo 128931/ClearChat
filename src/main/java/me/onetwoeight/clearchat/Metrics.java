@@ -35,13 +35,13 @@ public final class Metrics {
      * @param serviceId The id of the service. It can be found at <a
      *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
-    public Metrics(JavaPlugin plugin, int serviceId) {
+    public Metrics(final JavaPlugin plugin, final int serviceId) {
         this.plugin = plugin;
         // Get the config file
-        File bStatsFolder = new File(plugin.getDataFolder().getParentFile(), "bStats");
-        File configFile = new File(bStatsFolder, "config.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-        String serverUuid = "serverUuid";
+        final File bStatsFolder = new File(plugin.getDataFolder().getParentFile(), "bStats");
+        final File configFile = new File(bStatsFolder, "config.yml");
+        final YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        final String serverUuid = "serverUuid";
         if (!config.isSet(serverUuid)) {
             config.addDefault("enabled", true);
             config.addDefault(serverUuid, UUID.randomUUID().toString());
@@ -67,11 +67,11 @@ public final class Metrics {
             }
         }
         // Load the data
-        boolean enabled = config.getBoolean("enabled", true);
-        String serverUUID = config.getString(serverUuid);
-        boolean logErrors = config.getBoolean("logFailedRequests", false);
-        boolean logSentData = config.getBoolean("logSentData", false);
-        boolean logResponseStatusText = config.getBoolean("logResponseStatusText", false);
+        final boolean enabled = config.getBoolean("enabled", true);
+        final String serverUUID = config.getString(serverUuid);
+        final boolean logErrors = config.getBoolean("logFailedRequests", false);
+        final boolean logSentData = config.getBoolean("logSentData", false);
+        final boolean logResponseStatusText = config.getBoolean("logResponseStatusText", false);
         new MetricsBase(
                 "bukkit",
                 serverUUID,
@@ -88,7 +88,7 @@ public final class Metrics {
                 logResponseStatusText);
     }
 
-    private void appendPlatformData(JsonObjectBuilder builder) {
+    private void appendPlatformData(final JsonObjectBuilder builder) {
         builder.appendField("playerAmount", getPlayerAmount());
         builder.appendField("onlineMode", Bukkit.getOnlineMode() ? 1 : 0);
         builder.appendField("bukkitVersion", Bukkit.getVersion());
@@ -100,7 +100,7 @@ public final class Metrics {
         builder.appendField("coreCount", Runtime.getRuntime().availableProcessors());
     }
 
-    private void appendServiceData(JsonObjectBuilder builder) {
+    private void appendServiceData(final JsonObjectBuilder builder) {
         builder.appendField("pluginVersion", plugin.getDescription().getVersion());
     }
 
@@ -108,7 +108,7 @@ public final class Metrics {
         try {
             // Around MC 1.8 the return type was changed from an array to a collection,
             // This fixes java.lang.NoSuchMethodError
-            Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
+            final Method onlinePlayersMethod = Class.forName("org.bukkit.Server").getMethod("getOnlinePlayers");
             return onlinePlayersMethod.getReturnType().equals(Collection.class)
                     ? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).size()
                     : ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer())).length;
@@ -118,7 +118,7 @@ public final class Metrics {
         }
     }
 
-    public static class MetricsBase {
+    public static final class MetricsBase {
 
         /**
          * The version of the Metrics class.
@@ -179,19 +179,19 @@ public final class Metrics {
          */
         @SuppressWarnings("GrazieInspection")
         public MetricsBase(
-                String platform,
-                String serverUuid,
-                int serviceId,
-                boolean enabled,
-                Consumer<JsonObjectBuilder> appendPlatformDataConsumer,
-                Consumer<JsonObjectBuilder> appendServiceDataConsumer,
-                Consumer<Runnable> submitTaskConsumer,
-                Supplier<Boolean> checkServiceEnabledSupplier,
-                BiConsumer<String, Throwable> errorLogger,
-                Consumer<String> infoLogger,
-                boolean logErrors,
-                boolean logSentData,
-                boolean logResponseStatusText) {
+                final String platform,
+                final String serverUuid,
+                final int serviceId,
+                final boolean enabled,
+                final Consumer<JsonObjectBuilder> appendPlatformDataConsumer,
+                final Consumer<JsonObjectBuilder> appendServiceDataConsumer,
+                final Consumer<Runnable> submitTaskConsumer,
+                final Supplier<Boolean> checkServiceEnabledSupplier,
+                final BiConsumer<String, Throwable> errorLogger,
+                final Consumer<String> infoLogger,
+                final boolean logErrors,
+                final boolean logSentData,
+                final boolean logResponseStatusText) {
             this.platform = platform;
             this.serverUuid = serverUuid;
             this.serviceId = serviceId;
@@ -222,7 +222,7 @@ public final class Metrics {
             if (str == null) {
                 return new byte[0];
             }
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try (GZIPOutputStream gzip = new GZIPOutputStream(outputStream)) {
                 gzip.write(str.getBytes(StandardCharsets.UTF_8));
             }
@@ -251,9 +251,9 @@ public final class Metrics {
             // WARNING: You must not modify and part of this Metrics class, including the submit delay or
             // frequency!
             // WARNING: Modifying this code will get your plugin banned on bStats. Just don't do it!
-            SecureRandom random = new SecureRandom();
-            long initialDelay = (long) (1000 * 60 * (3 + random.nextDouble() * 3));
-            long secondDelay = (long) (1000 * 60 * (random.nextDouble() * 30));
+            final SecureRandom random = new SecureRandom();
+            final long initialDelay = (long) (1000 * 60 * (3 + random.nextDouble() * 3));
+            final long secondDelay = (long) (1000 * 60 * (random.nextDouble() * 30));
             scheduler.schedule(submitTask, initialDelay, TimeUnit.MILLISECONDS);
             scheduler.scheduleAtFixedRate(
                     submitTask, initialDelay + secondDelay, 1_800_000L, TimeUnit.MILLISECONDS);
@@ -269,7 +269,7 @@ public final class Metrics {
             baseJsonBuilder.appendField("service", serviceJsonBuilder.build());
             baseJsonBuilder.appendField("serverUUID", serverUuid);
             baseJsonBuilder.appendField("metricsVersion", METRICS_VERSION);
-            JsonObjectBuilder.JsonObject data = baseJsonBuilder.build();
+            final JsonObjectBuilder.JsonObject data = baseJsonBuilder.build();
             scheduler.execute(
                     () -> {
                         try {
@@ -284,14 +284,14 @@ public final class Metrics {
                     });
         }
 
-        private void sendData(JsonObjectBuilder.JsonObject data) throws IOException {
+        private void sendData(final JsonObjectBuilder.JsonObject data) throws IOException {
             if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: " + data.toString());
             }
-            String url = String.format(REPORT_URL, platform);
-            HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
+            final String url = String.format(REPORT_URL, platform);
+            final HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
             // Compress the data to save bandwidth
-            byte[] compressedData = compress(data.toString());
+            final byte[] compressedData = compress(data.toString());
             connection.setRequestMethod("POST");
             connection.addRequestProperty("Accept", "application/json");
             connection.addRequestProperty("Connection", "close");
@@ -303,7 +303,7 @@ public final class Metrics {
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
                 outputStream.write(compressedData);
             }
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             try (BufferedReader bufferedReader =
                          new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                 String line;
@@ -324,7 +324,7 @@ public final class Metrics {
      * <p>While this class is neither feature-rich nor the most performant one, it's sufficient
      * for its use-case.
      */
-    public static class JsonObjectBuilder {
+    public static final class JsonObjectBuilder {
 
         private StringBuilder builder = new StringBuilder();
 
@@ -343,10 +343,10 @@ public final class Metrics {
          * @param value The value to escape.
          * @return The escaped value.
          */
-        private static String escape(String value) {
+        private static String escape(final String value) {
             final StringBuilder builder = new StringBuilder();
             for (int i = 0; i < value.length(); i++) {
-                char c = value.charAt(i);
+                final char c = value.charAt(i);
                 if (c == '"') {
                     builder.append("\\\"");
                 } else if (c == '\\') {
@@ -368,7 +368,7 @@ public final class Metrics {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        public void appendField(String key, String value) {
+        public void appendField(final String key, final String value) {
             if (value == null) {
                 throw new IllegalArgumentException("JSON value must not be null");
             }
@@ -381,7 +381,7 @@ public final class Metrics {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        public void appendField(String key, int value) {
+        public void appendField(final String key, final int value) {
             appendFieldUnescaped(key, String.valueOf(value));
         }
 
@@ -391,7 +391,7 @@ public final class Metrics {
          * @param key    The key of the field.
          * @param object The object.
          */
-        public void appendField(String key, JsonObject object) {
+        public void appendField(final String key, final JsonObject object) {
             if (object == null) {
                 throw new IllegalArgumentException("JSON object must not be null");
             }
@@ -404,7 +404,7 @@ public final class Metrics {
          * @param key          The key of the field.
          * @param escapedValue The escaped value of the field.
          */
-        private void appendFieldUnescaped(String key, String escapedValue) {
+        private void appendFieldUnescaped(final String key, final String escapedValue) {
             if (builder == null) {
                 throw new IllegalStateException("JSON has already been built");
             }
@@ -427,7 +427,7 @@ public final class Metrics {
             if (builder == null) {
                 throw new IllegalStateException("JSON has already been built");
             }
-            JsonObject object = new JsonObject(builder.append("}").toString());
+            final JsonObject object = new JsonObject(builder.append("}").toString());
             builder = null;
             return object;
         }
@@ -439,11 +439,11 @@ public final class Metrics {
          * allow a raw string inputs for methods like {@link JsonObjectBuilder#appendField(String,
          * JsonObject)}.
          */
-        public static class JsonObject {
+        public static final class JsonObject {
 
             private final String value;
 
-            private JsonObject(String value) {
+            private JsonObject(final String value) {
                 this.value = value;
             }
 
