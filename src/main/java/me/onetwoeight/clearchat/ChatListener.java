@@ -24,12 +24,12 @@ final class ChatListener implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
-        String player = "cc.player";
-        String global = "cc.global";
-        String send = "%sender%";
-        String prefix = "Prefix";
-        String getPlayer = "Expression 'getPlayer(args[0])' must not be null";
-        String getString = "Expression 'plugin.getConfig().getString(\"String Path\")' must not be null";
+        final String player = "cc.player";
+        final String global = "cc.global";
+        final String send = "%sender%";
+        final String prefix = "Prefix";
+        final String getPlayer = "Expression 'getPlayer(args[0])' must not be null";
+        final String getString = "Expression 'plugin.getConfig().getString(\"String Path\")' must not be null";
         if (sender.hasPermission(global) && args.length == 0) {
             for (int i = 0; i < 1000; i++) {
                 broadcastMessage("");
