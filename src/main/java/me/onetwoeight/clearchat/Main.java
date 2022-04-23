@@ -1,6 +1,6 @@
 package me.onetwoeight.clearchat;
 
-import me.onetwoeight.clearchat.listener.ChatListener;
+import me.onetwoeight.clearchat.listeners.ChatListener;
 import me.onetwoeight.clearchat.statistics.Metrics;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;

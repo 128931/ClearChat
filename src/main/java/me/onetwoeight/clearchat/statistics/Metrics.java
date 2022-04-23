@@ -13,7 +13,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -41,7 +41,6 @@ public final class Metrics {
      * @param serviceId The id of the service. It can be found at <a
      *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
-    @SuppressWarnings("deprecation")
     public Metrics(final JavaPlugin plugin, final int serviceId) {
         this.plugin = plugin;
         // Get the config file
@@ -56,9 +55,10 @@ public final class Metrics {
             config.addDefault("logSentData", false);
             config.addDefault("logResponseStatusText", false);
             // Inform the server owners about bStats
+            //noinspection deprecation
             config
                     .options()
-                    // Some servers are still on older versions using snakeyaml 1.15, so we have to use this deprecated method in 1.30
+                    // Due to servers still running on older versions such as 1.8 we have to use this method that's deprecated in newer versions.
                     .header(
                             "bStats (https://bStats.org) collects some basic information for plugin authors, like how\n"
                                     + "many people use their plugin and their total player count. It's recommended to keep bStats\n"
@@ -124,17 +124,10 @@ public final class Metrics {
         }
     }
 
-    public static final class MetricsBase {
-
-        /**
-         * The version of the Metrics class.
-         */
-        public static final String METRICS_VERSION = "3.0.0";
+    private static final class MetricsBase {
 
         private static final ScheduledExecutorService scheduler =
                 Executors.newScheduledThreadPool(1, task -> new Thread(task, "bStats-Metrics"));
-
-        private static final String REPORT_URL = "https://bStats.org/api/v2/data/%s";
 
         private final String platform;
 
@@ -265,23 +258,16 @@ public final class Metrics {
                     submitTask, initialDelay + secondDelay, 1_800_000L, TimeUnit.MILLISECONDS);
         }
 
-        @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "RedundantOperationOnEmptyContainer"})
         private void submitData() {
             final JsonObjectBuilder baseJsonBuilder = new JsonObjectBuilder();
             appendPlatformDataConsumer.accept(baseJsonBuilder);
             final JsonObjectBuilder serviceJsonBuilder = new JsonObjectBuilder();
             appendServiceDataConsumer.accept(serviceJsonBuilder);
-            Set<CustomChart> customCharts = new HashSet<>();
-            final JsonObjectBuilder.JsonObject[] chartData =
-                    customCharts.stream()
-                            .map(customChart -> customChart.getRequestJsonObject(errorLogger, logErrors))
-                            .filter(Objects::nonNull)
-                            .toArray(JsonObjectBuilder.JsonObject[]::new);
             serviceJsonBuilder.appendField("id", serviceId);
-            serviceJsonBuilder.appendField("customCharts", chartData);
+            serviceJsonBuilder.appendField("customCharts");
             baseJsonBuilder.appendField("service", serviceJsonBuilder.build());
             baseJsonBuilder.appendField("serverUUID", serverUuid);
-            baseJsonBuilder.appendField("metricsVersion", METRICS_VERSION);
+            baseJsonBuilder.appendField("metricsVersion", "3.0.0");
             final JsonObjectBuilder.JsonObject data = baseJsonBuilder.build();
             scheduler.execute(
                     () -> {
@@ -301,7 +287,7 @@ public final class Metrics {
             if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: " + data.toString());
             }
-            final String url = String.format(REPORT_URL, platform);
+            final String url = String.format("https://bStats.org/api/v2/data/%s", platform);
             final HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
             // Compress the data to save bandwidth
             final byte[] compressedData = compress(data.toString());
@@ -337,7 +323,7 @@ public final class Metrics {
      * <p>While this class is neither feature-rich nor the most performant one, it's sufficient
      * for its use-case.
      */
-    public static final class JsonObjectBuilder {
+    private static final class JsonObjectBuilder {
 
         private StringBuilder builder = new StringBuilder();
 
@@ -379,15 +365,9 @@ public final class Metrics {
          * Appends an object array to the JSON.
          *
          * @param key    The key of the field.
-         * @param values The integer array.
          */
-        public void appendField(final String key, final JsonObject[] values) {
-            if (values == null) {
-                throw new IllegalArgumentException("JSON values must not be null");
-            }
-            final String escapedValues =
-                    Arrays.stream(values).map(JsonObject::toString).collect(Collectors.joining(","));
-            appendFieldUnescaped(key, "[" + escapedValues + "]");
+        public void appendField(final String key) {
+            appendFieldUnescaped(key, "[" + "]");
         }
 
         /**
@@ -396,7 +376,7 @@ public final class Metrics {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        public void appendField(final String key, final String value) {
+        private void appendField(final String key, final String value) {
             if (value == null) {
                 throw new IllegalArgumentException("JSON value must not be null");
             }
@@ -409,7 +389,7 @@ public final class Metrics {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        public void appendField(final String key, final int value) {
+        private void appendField(final String key, final int value) {
             appendFieldUnescaped(key, String.valueOf(value));
         }
 
@@ -419,7 +399,7 @@ public final class Metrics {
          * @param key    The key of the field.
          * @param object The object.
          */
-        public void appendField(final String key, final JsonObject object) {
+        private void appendField(final String key, final JsonObject object) {
             if (object == null) {
                 throw new IllegalArgumentException("JSON object must not be null");
             }
@@ -451,7 +431,7 @@ public final class Metrics {
          *
          * @return The built JSON string.
          */
-        public JsonObject build() {
+        private JsonObject build() {
             if (builder == null) {
                 throw new IllegalStateException("JSON has already been built");
             }
@@ -467,7 +447,7 @@ public final class Metrics {
          * allow a raw string inputs for methods like {@link JsonObjectBuilder#appendField(String,
          * JsonObject)}.
          */
-        public static final class JsonObject {
+        private static final class JsonObject {
 
             private final String value;
 
@@ -482,37 +462,4 @@ public final class Metrics {
         }
     }
 
-    public abstract static class CustomChart {
-
-        private final String chartId;
-
-        protected CustomChart(final String chartId) {
-            if (chartId == null) {
-                throw new IllegalArgumentException("chartId must not be null");
-            }
-            this.chartId = chartId;
-        }
-
-        public JsonObjectBuilder.JsonObject getRequestJsonObject(
-                final BiConsumer<String, Throwable> errorLogger, final boolean logErrors) {
-            final JsonObjectBuilder builder = new JsonObjectBuilder();
-            builder.appendField("chartId", chartId);
-            try {
-                final JsonObjectBuilder.JsonObject data = getChartData();
-                if (data == null) {
-                    // If the data is null we don't send the chart.
-                    return null;
-                }
-                builder.appendField("data", data);
-            } catch (final Exception e) {
-                if (logErrors) {
-                    errorLogger.accept("Failed to get data for custom chart with id " + chartId, e);
-                }
-                return null;
-            }
-            return builder.build();
-        }
-
-        protected abstract JsonObjectBuilder.JsonObject getChartData() throws Exception;
-    }
 }

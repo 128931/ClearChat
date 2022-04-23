@@ -1,4 +1,4 @@
-package me.onetwoeight.clearchat.listener;
+package me.onetwoeight.clearchat.listeners;
 
 import me.onetwoeight.clearchat.Main;
 import org.bukkit.command.Command;
