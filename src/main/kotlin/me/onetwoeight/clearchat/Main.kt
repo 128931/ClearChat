@@ -1,5 +1,7 @@
 package me.onetwoeight.clearchat
 
+import me.onetwoeight.clearchat.listeners.ChatListener
+import me.onetwoeight.clearchat.statistics.Metrics
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -11,6 +13,7 @@ class Main : JavaPlugin() {
     override fun onEnable() {
         saveDefaultConfig()
         getCommand("cc")?.setExecutor(ChatListener(this))
+        Metrics(this, 14968)
         logger.info("${description.name} v${description.version} Enabled")
     }
 

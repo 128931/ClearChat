@@ -1,5 +1,6 @@
-package me.onetwoeight.clearchat
+package me.onetwoeight.clearchat.listeners
 
+import me.onetwoeight.clearchat.Main
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
