@@ -101,7 +101,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
 
     private fun appendServiceData(builder: JsonObjectBuilder) {
         builder.appendField("pluginVersion", plugin.description.version)
-    }// Just use the new method if the reflection failed
+    }
 
     // Around MC 1.8 the return type was changed from an array to a collection,
     // This fixes java.lang.NoSuchMethodError
@@ -113,15 +113,13 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             if (onlinePlayersMethod.returnType == MutableCollection::class.java) (onlinePlayersMethod.invoke(Bukkit.getServer()) as Collection<*>).size else (onlinePlayersMethod.invoke(
                 Bukkit.getServer()
             ) as Array<*>).size
-        } catch (e: ClassNotFoundException) {
-            // Just use the new method if the reflection failed
-            Bukkit.getOnlinePlayers().size
-        } catch (e: NoSuchMethodException) {
-            Bukkit.getOnlinePlayers().size
-        } catch (e: IllegalAccessException) {
-            Bukkit.getOnlinePlayers().size
-        } catch (e: InvocationTargetException) {
-            Bukkit.getOnlinePlayers().size
+        } catch (e: Exception) {
+            when (e) {
+                is ClassNotFoundException, is NoSuchMethodException, is IllegalAccessException, is InvocationTargetException -> {
+                    Bukkit.getOnlinePlayers().size
+                }
+                else -> throw e
+            }
         }
 
     private class MetricsBase(
