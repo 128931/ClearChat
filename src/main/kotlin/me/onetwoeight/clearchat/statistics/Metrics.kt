@@ -47,7 +47,11 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             // Inform the server owners about bStats
             @Suppress("DEPRECATION")
             config
-                .options() // Due to servers still running on older versions such as 1.8 we have to use this method that's deprecated in newer versions.
+                .options()
+                /*
+                Due to servers still running on older versions such as 1.8 that use snakeyaml 1.15
+                we have to use this method that's deprecated in newer versions that use snakeyaml 1.30.
+                */
                 .header(
                     """
                     bStats (https://bStats.org) collects some basic information for plugin authors, like how
@@ -103,8 +107,6 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
         builder.appendField("pluginVersion", plugin.description.version)
     }
 
-    // Around MC 1.8 the return type was changed from an array to a collection,
-    // This fixes java.lang.NoSuchMethodError
     private val playerAmount: Int
         get() = try {
             // Around MC 1.8 the return type was changed from an array to a collection,
@@ -115,6 +117,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             ) as Array<*>).size
         } catch (e: Exception) {
             when (e) {
+                // Just use the new method if the reflection failed
                 is ClassNotFoundException, is NoSuchMethodException, is IllegalAccessException, is InvocationTargetException -> {
                     Bukkit.getOnlinePlayers().size
                 }
