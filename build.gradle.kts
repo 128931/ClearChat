@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     `java-library`
     kotlin("jvm") version "1.6.20"
@@ -39,6 +37,22 @@ tasks {
         if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible)
             options.release.set(targetJavaVersion)
     }
+    compileTestJava {
+        options.encoding = Charsets.UTF_8.name()
+    }
+    javadoc {
+        options.encoding = Charsets.UTF_8.name()
+    }
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = javaVersion.toString()
+        }
+    }
+    compileTestKotlin {
+        kotlinOptions {
+            jvmTarget = javaVersion.toString()
+        }
+    }
     processResources {
         filesMatching("plugin.yml") {
             expand("version" to project.version)
@@ -68,14 +82,4 @@ sonarqube {
         property("sonar.organization", "128931")
         property("sonar.host.url", "https://sonarcloud.io")
     }
-}
-
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = javaVersion.toString()
-}
-
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = javaVersion.toString()
 }
