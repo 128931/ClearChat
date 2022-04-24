@@ -118,9 +118,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
         } catch (e: Exception) {
             when (e) {
                 // Just use the new method if the reflection failed
-                is ClassNotFoundException, is NoSuchMethodException, is IllegalAccessException, is InvocationTargetException -> {
-                    Bukkit.getOnlinePlayers().size
-                }
+                is ClassNotFoundException, is NoSuchMethodException, is IllegalAccessException, is InvocationTargetException -> Bukkit.getOnlinePlayers().size
                 else -> throw e
             }
         }
