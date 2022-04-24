@@ -20,7 +20,7 @@ import java.util.zip.GZIPOutputStream
 import javax.net.ssl.HttpsURLConnection
 
 /**
- * Code Cleaned up by 128931 at 4/18/2022
+ * Code Converted to Kotlin by 128931 at 4/24/2022
  *
  * @author BtoBastian
  * @since 2/17/2017
