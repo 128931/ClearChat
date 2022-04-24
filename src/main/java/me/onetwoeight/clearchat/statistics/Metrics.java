@@ -118,7 +118,8 @@ public final class Metrics {
             return onlinePlayersMethod.getReturnType().equals(Collection.class)
                     ? ((Collection<?>) onlinePlayersMethod.invoke(Bukkit.getServer())).size()
                     : ((Player[]) onlinePlayersMethod.invoke(Bukkit.getServer())).length;
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
+                 InvocationTargetException e) {
             // Just use the new method if the reflection failed
             return Bukkit.getOnlinePlayers().size();
         }
@@ -364,7 +365,7 @@ public final class Metrics {
         /**
          * Appends an object array to the JSON.
          *
-         * @param key    The key of the field.
+         * @param key The key of the field.
          */
         public void appendField(final String key) {
             appendFieldUnescaped(key, "[" + "]");
