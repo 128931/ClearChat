@@ -35,6 +35,12 @@ tasks {
         if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible)
             options.release.set(targetJavaVersion)
     }
+    compileTestJava {
+        options.encoding = Charsets.UTF_8.name()
+    }
+    javadoc {
+        options.encoding = Charsets.UTF_8.name()
+    }
     processResources {
         filesMatching("plugin.yml") {
             expand("version" to project.version)
