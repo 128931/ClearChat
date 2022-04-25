@@ -165,8 +165,12 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
              we simply set it to send the request every 30 minutes to resolve the problem. Furthermore,
              it only begins sending the request(s) 30 minutes after the server has booted up to avoid sending requests
              immediately every time we boot up our server.
+
+
+             NOTICE:
+             bStats staff if you are concerned with the fact that I transmit a request every 30 minutes, please let me know,
+             and I will raise it to 35 minutes since that was the most amount of minutes your rng could make/reach.
              */
-            // NOTICE: bStats staff if you do not like me sending it every 30 mins I will up it to 60 mins as the random values were typically FAR below 60 mins.
             scheduler.scheduleAtFixedRate(
                 submitTask, 1_800_000L, 1_800_000L, TimeUnit.MILLISECONDS
             )
