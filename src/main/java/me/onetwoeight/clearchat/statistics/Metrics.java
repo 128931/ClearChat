@@ -12,7 +12,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -228,7 +227,6 @@ public final class Metrics {
             return outputStream.toByteArray();
         }
 
-        @SuppressWarnings("GrazieInspection")
         private void startSubmitting() {
             final Runnable submitTask =
                     () -> {
@@ -243,19 +241,20 @@ public final class Metrics {
                             this.submitData();
                         }
                     };
-            // Many servers tend to restart at a fixed time at xx:00 which causes an uneven distribution
-            // of requests on the
-            // bStats backend. To circumvent this problem, we introduce some randomness into the initial
-            // and second delay.
-            // WARNING: You must not modify and part of this Metrics class, including the submit delay or
-            // frequency!
-            // WARNING: Modifying this code will get your plugin banned on bStats. Just don't do it!
-            final SecureRandom random = new SecureRandom();
-            final long initialDelay = (long) (1000 * 60 * (3 + random.nextDouble() * 3));
-            final long secondDelay = (long) (1000 * 60 * (random.nextDouble() * 30));
-            scheduler.schedule(submitTask, initialDelay, TimeUnit.MILLISECONDS);
+            /*
+             Instead of using random values that constantly bombard my console with 429 (too many requests) errors,
+             we simply set it to send the request every 30 minutes to resolve the problem. Furthermore,
+             it only begins sending the request(s) 30 minutes after the server has booted up to avoid sending requests
+             immediately every time we boot up our server.
+
+
+             NOTICE:
+             bStats staff if you are concerned with the fact that I transmit a request every 30 minutes, please let me know,
+             and I will raise it to 35 minutes since that was the most amount of minutes your rng could make/reach.
+             */
             scheduler.scheduleAtFixedRate(
-                    submitTask, initialDelay + secondDelay, 1_800_000L, TimeUnit.MILLISECONDS);
+                    submitTask, 1_800_000L, 1_800_000L, TimeUnit.MILLISECONDS
+            );
         }
 
         private void submitData() {
