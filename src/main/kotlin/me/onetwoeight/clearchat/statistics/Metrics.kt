@@ -70,18 +70,18 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
         }
         // Load the data
         val enabled = config.getBoolean("enabled", true)
-        val serverUUID = config.getString(serverUuid)!!
+        val serverUUID = config.getString(serverUuid)
         val logErrors = config.getBoolean("logFailedRequests", false)
         val logSentData = config.getBoolean("logSentData", false)
         val logResponseStatusText = config.getBoolean("logResponseStatusText", false)
         MetricsBase(
             "bukkit",
-            serverUUID,
+            serverUUID.toString(),
             serviceId,
             enabled,
             { builder: JsonObjectBuilder -> appendPlatformData(builder) },
             { builder: JsonObjectBuilder -> appendServiceData(builder) },
-            { submitDataTask: Runnable? -> Bukkit.getScheduler().runTask(plugin, submitDataTask!!) },
+            { submitDataTask: Runnable? -> submitDataTask?.let { Bukkit.getScheduler().runTask(plugin, it) } },
             { plugin.isEnabled },
             { message: String?, error: Throwable? -> this.plugin.getLogger().log(Level.WARNING, message, error) },
             { message: String? -> this.plugin.getLogger().log(Level.INFO, message) },
@@ -265,7 +265,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
         private var hasAtLeastOneField = false
 
         init {
-            builder!!.append("{")
+            builder?.append("{")
         }
 
         /**
@@ -319,9 +319,9 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             checkNotNull(builder) { "JSON has already been built" }
             requireNotNull(key) { "JSON key must not be null" }
             if (hasAtLeastOneField) {
-                builder!!.append(",")
+                builder?.append(",")
             }
-            builder!!.append("\"").append(escape(key)).append("\":").append(escapedValue)
+            builder?.append("\"")?.append(escape(key))?.append("\":")?.append(escapedValue)
             hasAtLeastOneField = true
         }
 
@@ -333,7 +333,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
         fun build(): JsonObject {
             checkNotNull(builder) { "JSON has already been built" }
             val `object` = JsonObject(
-                builder!!.append("}").toString()
+                builder?.append("}").toString()
             )
             builder = null
             return `object`
