@@ -8,7 +8,6 @@ import java.io.*
 import java.lang.reflect.InvocationTargetException
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -161,19 +160,14 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
                     submitData()
                 }
             }
-            // Many servers tend to restart at a fixed time at xx:00 which causes an uneven distribution
-            // of requests on the
-            // bStats backend. To circumvent this problem, we introduce some randomness into the initial
-            // and second delay.
-            // WARNING: You must not modify and part of this Metrics class, including submit delay or
-            // frequency!
-            // WARNING: Modifying this code will get your plugin banned on bStats. Just don't do it!
-            val random = SecureRandom()
-            val initialDelay = (1000 * 60 * (3 + random.nextDouble() * 3)).toLong()
-            val secondDelay = (1000 * 60 * (random.nextDouble() * 30)).toLong()
-            scheduler.schedule(submitTask, initialDelay, TimeUnit.MILLISECONDS)
+            /*
+             Instead of using random values that constantly bombard my console with 429 (too many requests) errors,
+             we simply set it to send the request every 30 minutes to resolve the problem. Furthermore,
+             it only begins sending the request(s) 30 minutes after the server has booted up to avoid sending requests
+             immediately every time we boot up our server.
+             */
             scheduler.scheduleAtFixedRate(
-                submitTask, initialDelay + secondDelay, 1800000L, TimeUnit.MILLISECONDS
+                submitTask, 1_800_000L, 1_800_000L, TimeUnit.MILLISECONDS
             )
         }
 
