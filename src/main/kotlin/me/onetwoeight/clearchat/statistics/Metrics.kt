@@ -166,6 +166,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
              it only begins sending the request(s) 30 minutes after the server has booted up to avoid sending requests
              immediately every time we boot up our server.
              */
+            // NOTICE: bStats staff if you do not like me sending it every 30 mins I will up it to 60 mins as the random values were typically FAR below 60 mins.
             scheduler.scheduleAtFixedRate(
                 submitTask, 1_800_000L, 1_800_000L, TimeUnit.MILLISECONDS
             )
