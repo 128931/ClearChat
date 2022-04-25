@@ -1,5 +1,4 @@
 plugins {
-    `java-library`
     kotlin("jvm") version "1.6.20"
     id("org.sonarqube") version "3.3"
 }
@@ -18,31 +17,16 @@ repositories {
 }
 
 dependencies {
+    implementation(kotlin("stdlib-jdk8"))
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:23.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 val targetJavaVersion = 8
 val javaVersion = JavaVersion.toVersion(targetJavaVersion)
-java {
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-}
 
 tasks {
-    compileJava {
-        options.encoding = Charsets.UTF_8.name()
-        if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible)
-            options.release.set(targetJavaVersion)
-    }
-    compileTestJava {
-        options.encoding = Charsets.UTF_8.name()
-    }
-    javadoc {
-        options.encoding = Charsets.UTF_8.name()
-    }
     compileKotlin {
         kotlinOptions {
             jvmTarget = javaVersion.toString()
