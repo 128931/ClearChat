@@ -33,7 +33,7 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
                 if (Bukkit.getPlayer(args[0])?.isOnline == true) {
                     Bukkit.getPlayer(args[0])?.sendMessage("")
                 } else {
-                    sender.sendMessage(ChatColor.RED.toString() + "Could not find specified player" + ChatColor.RESET)
+                    sender.sendMessage("${ChatColor.RED}Could not find specified player${ChatColor.RESET}")
                     break
                 }
             }
@@ -66,7 +66,7 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
                 }
             )
         } else if (sender.hasPermission(player) && args.size > 1) {
-            sender.sendMessage(ChatColor.RED.toString() + "Please refrain from using 2 or more args" + ChatColor.RESET)
+            sender.sendMessage("${ChatColor.RED}Please refrain from using 2 or more args${ChatColor.RESET}")
         }
         return true
     }

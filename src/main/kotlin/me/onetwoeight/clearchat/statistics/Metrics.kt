@@ -39,7 +39,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
         val serverUuid = "serverUuid"
         if (!config.isSet(serverUuid)) {
             config.addDefault("enabled", true)
-            config.addDefault(serverUuid, UUID.randomUUID().toString())
+            config.addDefault(serverUuid, UUID.randomUUID())
             config.addDefault("logFailedRequests", false)
             config.addDefault("logSentData", false)
             config.addDefault("logResponseStatusText", false)
@@ -205,7 +205,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: $data")
             }
-            val url = String.format("https://bStats.org/api/v2/data/%s", platform)
+            val url = "https://bStats.org/api/v2/data/${platform}"
             val connection = URL(url).openConnection() as HttpsURLConnection
             // Compress the data to save bandwidth
             val compressedData = compress(data.toString())
