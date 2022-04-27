@@ -1,10 +1,12 @@
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.6.21"
     id("org.sonarqube") version "3.3"
 }
 
 group = "me.onetwoeight"
 version = "1.0"
+
+val kotlinJvmTarget = JavaVersion.toVersion(8)
 
 repositories {
     mavenCentral()
@@ -18,23 +20,23 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:23.0.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-}
 
-val targetJavaVersion = 8
-val javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation(kotlin("test"))
+}
 
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = javaVersion.toString()
+            jvmTarget = kotlinJvmTarget.toString()
         }
     }
     compileTestKotlin {
         kotlinOptions {
-            jvmTarget = javaVersion.toString()
+            jvmTarget = kotlinJvmTarget.toString()
         }
     }
     processResources {
