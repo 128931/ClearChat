@@ -22,6 +22,10 @@ public final class Main extends JavaPlugin {
         PluginCommand pluginCommand = getCommand("cc");
         if (pluginCommand != null) {
             pluginCommand.setExecutor(new ChatListener(this));
+        } else {
+            getLogger().severe("getCommand(\"cc\") is null disabling " + name);
+            getPluginLoader().disablePlugin(this);
+            return;
         }
         new Metrics(this, 14968);
         getLogger().info(() -> name + " v" + version + " Enabled"); // since Java 8, we can use Supplier, which will be evaluated lazily
