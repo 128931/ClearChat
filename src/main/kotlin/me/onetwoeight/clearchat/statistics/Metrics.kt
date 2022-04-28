@@ -48,8 +48,8 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             config
                 .options()
                 /*
-                Due to servers still running on older versions such as 1.8 that use snakeyaml 1.15
-                we have to use this method that's deprecated in newer versions that use snakeyaml 1.30.
+                Because servers are still operating on older versions of snakeyaml, such as 1.8, which utilizes snakeyaml 1.15,
+                we must use this approach, which is deprecated in current versions that use snakeyaml 1.30.
                 */
                 .header(
                     """

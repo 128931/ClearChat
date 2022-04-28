@@ -50,7 +50,7 @@ tasks {
     jar {
         val dependencies = configurations.runtimeClasspath.get().map(::zipTree)
         from(dependencies)
-        // Due to never using the Kotlin Reflect library in this project we can exclude these without any issues/errors occurring
+        // We may omit them without any troubles or errors because we never use the Kotlin Reflect library in this project.
         exclude(
             "**/*.kotlin_metadata",
             "**/*.kotlin_module",

@@ -1,7 +1,7 @@
 main: me.onetwoeight.clearchat.Main
 name: ClearChat
 version: '$version'
-description: Plugin for clearing a player's chat or global chat
+description: Plugin that allows you to wipe the chat of a single user or the entire server.
 load: STARTUP
 author: onetwoeight
 website: https://github.com/128931/ClearChat
@@ -10,5 +10,5 @@ prefix: ClearChat
 commands:
   cc:
     aliases: clearchat
-    description: Clears a player's chat or global chat
-    usage: /<command>
+    description: This command is used to clear a single player's or everyone's chat.
+    usage: /<command> [player]
