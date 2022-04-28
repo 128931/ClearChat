@@ -206,7 +206,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: $data")
             }
-            val url = "https://bStats.org/api/v2/data/${platform}"
+            val url = "https://bStats.org/api/v2/data/$platform"
             val connection = URL(url).openConnection() as HttpsURLConnection
             // Compress the data to save bandwidth
             val compressedData = compress(data.toString())
