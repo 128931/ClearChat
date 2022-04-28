@@ -1,20 +1,20 @@
 # Config variables:
-# %sender% - Person/Thing that executed the command.
-# %person% - The person that got their chat cleared by the %sender%.
+# %sender% - The person or thing who carried out the command.
+# %person% - The individual whose chat was cleared by the %sender%.
 
-# For Bukkit's Format/Color Codes: https://htmlcolorcodes.com/bukkit-color-codes/
+# Format/Color Codes for Bukkit: https://htmlcolorcodes.com/bukkit-color-codes/
 
-# The prefix of the plugin at the beginning of each message.
+# The plugin's prefix at the start of each message.
 Prefix: '&c&l[&3ClearChat&c&l]&r '
 
-# The message to be sent to chat after clearing global chat.
+# After clearing global chat, this is the message that will be delivered to chat.
 Global: '&cThe chat was cleared by %sender%&r'
 
-# The message to be sent to the person after clearing their chat.
+# The message to be given to the person once they have their chat cleared.
 Player: '&cYour chat was cleared by %sender%&r'
 
-# The message to be sent to the person after successfully clearing someone's chat.
+# After successfully clearing someone's chat, this message will be delivered to the %sender%.
 Success: "&cYou successfully cleared %person%'s chat &r"
 
-# The message to be sent when someone that executed the command doesn't have the permissions for it.
+# The message that will be sent if the person who performed the command does not have the necessary permissions.
 NoPermission: '&cYou do not have permission to do that&r'
