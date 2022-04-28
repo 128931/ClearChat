@@ -220,7 +220,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             connection.doOutput = true
             DataOutputStream(connection.outputStream).use { outputStream -> outputStream.write(compressedData) }
             val builder = StringBuilder()
-            BufferedReader(InputStreamReader(connection.inputStream)).use { bufferedReader ->
+            BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { bufferedReader ->
                 var line: String?
                 while (bufferedReader.readLine().also { line = it } != null) {
                     builder.append(line)
@@ -261,11 +261,11 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
      * for its use-case.
      */
     private class JsonObjectBuilder {
-        private var builder: StringBuilder? = StringBuilder()
+        private var builder: StringBuilder = StringBuilder()
         private var hasAtLeastOneField = false
 
         init {
-            builder?.append("{")
+            builder.append("{")
         }
 
         /**
@@ -316,12 +316,11 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
          * @param escapedValue The escaped value of the field.
          */
         private fun appendFieldUnescaped(key: String?, escapedValue: String) {
-            checkNotNull(builder) { "JSON has already been built" }
             requireNotNull(key) { "JSON key must not be null" }
             if (hasAtLeastOneField) {
-                builder?.append(",")
+                builder.append(",")
             }
-            builder?.append("\"")?.append(escape(key))?.append("\":")?.append(escapedValue)
+            builder.append("\"")?.append(escape(key))?.append("\":")?.append(escapedValue)
             hasAtLeastOneField = true
         }
 
@@ -331,11 +330,10 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
          * @return The built JSON string.
          */
         fun build(): JsonObject {
-            checkNotNull(builder) { "JSON has already been built" }
             val `object` = JsonObject(
-                builder?.append("}").toString()
+                builder.append("}").toString()
             )
-            builder = null
+            builder.setLength(0)
             return `object`
         }
 
