@@ -160,6 +160,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
                     submitData()
                 }
             }
+
             /*
              Instead of using random values that constantly bombard my console with 429 (too many requests) errors,
              we simply set it to send the request every 30 minutes to resolve the problem. Furthermore,

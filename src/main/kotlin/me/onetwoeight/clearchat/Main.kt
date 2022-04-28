@@ -13,7 +13,7 @@ class Main : JavaPlugin() {
     override fun onEnable() {
         saveDefaultConfig()
         getCommand("cc")?.setExecutor(ChatListener(this))
-        Metrics(this, 14968)
+        Metrics(this, 14_968)
         logger.info("${description.name} v${description.version} Enabled")
     }
 
