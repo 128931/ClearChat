@@ -81,12 +81,12 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
      * Also, this was written at 3 a.m., and I haven't slept in about 24 hours as of writing this,
      * so the code is probably not nice. I'll probably improve it later when I have more sleep to think.
      *
-     * @param Length The number of random spaces that will be created
+     * @param length The number of random spaces that will be created
      * @return String with a random amount of spaces
      */
     @Suppress("KDocUnresolvedReference", "SameParameterValue")
-    private fun rsg(Length: Int) : String {
-        val random = Random.nextInt(Length)
+    private fun rsg(length: Int) : String {
+        val random = Random.nextInt(length)
         val spaces = StringBuilder(random)
         for (i in 0..random) {
             spaces.append(" ")
