@@ -85,7 +85,7 @@ internal class ChatListener(private val plugin: ClearChatPlugin) : CommandExecut
      * @return String with a random amount of spaces
      */
     @Suppress("KDocUnresolvedReference", "SameParameterValue")
-    private fun rsg(length: Int) : String {
+    private fun rsg(length: Int): String {
         val random = Random.nextInt(length)
         val spaces = StringBuilder(random)
         for (i in 0..random) {
