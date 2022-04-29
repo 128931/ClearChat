@@ -1,4 +1,4 @@
-package me.onetwoeight.clearchat.statistics
+package io.github.onetwoeight.clearchat.statistics
 
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration

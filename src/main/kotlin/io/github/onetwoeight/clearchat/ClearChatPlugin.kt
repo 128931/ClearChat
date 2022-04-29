@@ -1,14 +1,14 @@
-package me.onetwoeight.clearchat
+package io.github.onetwoeight.clearchat
 
-import me.onetwoeight.clearchat.listeners.ChatListener
-import me.onetwoeight.clearchat.statistics.Metrics
+import io.github.onetwoeight.clearchat.listeners.ChatListener
+import io.github.onetwoeight.clearchat.statistics.Metrics
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * @author onetwoeight
  * @since 4/14/2022
  */
-class Main : JavaPlugin() {
+class ClearChatPlugin : JavaPlugin() {
 
     override fun onEnable() {
         saveDefaultConfig()

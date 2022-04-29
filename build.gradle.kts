@@ -3,7 +3,7 @@ plugins {
     id("org.sonarqube") version "3.3"
 }
 
-group = "me.onetwoeight"
+group = "io.github"
 version = "1.0"
 
 val kotlinJvmTarget = JavaVersion.toVersion(8)

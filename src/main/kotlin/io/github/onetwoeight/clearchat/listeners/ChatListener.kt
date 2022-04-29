@@ -1,6 +1,6 @@
-package me.onetwoeight.clearchat.listeners
+package io.github.onetwoeight.clearchat.listeners
 
-import me.onetwoeight.clearchat.Main
+import io.github.onetwoeight.clearchat.ClearChatPlugin
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -12,7 +12,7 @@ import kotlin.random.Random
  * @author onetwoeight
  * @since 4/14/2022
  */
-internal class ChatListener(private val plugin: Main) : CommandExecutor {
+internal class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         val prefix = "Prefix"
