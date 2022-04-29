@@ -6,6 +6,7 @@ import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import kotlin.random.Random
 
 /**
  * @author onetwoeight
@@ -20,7 +21,7 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
         val player = "cc.player"
         if (sender.hasPermission(global) && args.isEmpty()) {
             for (i in 0..999) {
-                Bukkit.broadcastMessage("")
+                Bukkit.broadcastMessage(rsg(10))
             }
             Bukkit.broadcastMessage(
                 ChatColor.translateAlternateColorCodes(
@@ -31,7 +32,7 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
         } else if (sender.hasPermission(player) && args.size == 1) {
             for (i in 0..999) {
                 if (Bukkit.getPlayer(args[0])?.isOnline == true) {
-                    Bukkit.getPlayer(args[0])?.sendMessage("")
+                    Bukkit.getPlayer(args[0])?.sendMessage(rsg(10))
                 } else {
                     sender.sendMessage("${ChatColor.RED}Could not find specified player${ChatColor.RESET}")
                     break
@@ -69,5 +70,27 @@ internal class ChatListener(private val plugin: Main) : CommandExecutor {
             sender.sendMessage("${ChatColor.RED}Please refrain from using 2 or more args${ChatColor.RESET}")
         }
         return true
+    }
+
+    /**
+     * Random Spaces Generator (RSG).
+     * Randomly generates a number of spaces to be announced because of clients such as Lunar, Wurst, FDP, etc.
+     * Have anti-spam features where it will stack a msg sent twice as "hello [x2]" and if we broadcast
+     * a single space a thousand times for them, it would view as " [x1000]" not clearing their chat.
+     *
+     * Also, this was written at 3 a.m., and I haven't slept in about 24 hours as of writing this,
+     * so the code is probably not nice. I'll probably improve it later when I have more sleep to think.
+     *
+     * @param Length The number of random spaces that will be created
+     * @return String with a random amount of spaces
+     */
+    @Suppress("KDocUnresolvedReference", "SameParameterValue")
+    private fun rsg(Length: Int) : String {
+        val random = Random.nextInt(Length)
+        val spaces = StringBuilder(random)
+        for (i in 0..random) {
+            spaces.append(" ")
+        }
+        return spaces.toString()
     }
 }
