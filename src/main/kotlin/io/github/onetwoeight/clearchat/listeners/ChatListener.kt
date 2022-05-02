@@ -1,6 +1,7 @@
 package io.github.onetwoeight.clearchat.listeners
 
 import io.github.onetwoeight.clearchat.ClearChatPlugin
+import io.github.onetwoeight.clearchat.utilities.CC
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -12,7 +13,7 @@ import kotlin.random.Random
  * @author onetwoeight
  * @since 4/14/2022
  */
-internal class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
+class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         val prefix = "Prefix"
@@ -24,10 +25,8 @@ internal class ChatListener(private val plugin: ClearChatPlugin) : CommandExecut
                 Bukkit.broadcastMessage(rsg(10))
             }
             Bukkit.broadcastMessage(
-                ChatColor.translateAlternateColorCodes(
-                    '&',
-                    plugin.config.getString(prefix) + plugin.config.getString("Global")
-                ).replace(send, sender.name)
+                CC.translate(plugin.config.getString(prefix) + plugin.config.getString("Global"))
+                    .replace(send, sender.name)
             )
         } else if (sender.hasPermission(player) && args.size == 1) {
             for (i in 0..999) {
@@ -40,29 +39,22 @@ internal class ChatListener(private val plugin: ClearChatPlugin) : CommandExecut
             }
             if (Bukkit.getPlayer(args[0])?.isOnline == true) {
                 Bukkit.getPlayer(args[0])?.sendMessage(
-                    ChatColor.translateAlternateColorCodes(
-                        '&',
-                        plugin.config.getString(prefix) + plugin.config.getString("Player")?.replace(
-                            send,
-                            sender.name
-                        )
+                    CC.translate(
+                        plugin.config.getString(prefix) + plugin.config.getString("Player")?.replace(send, sender.name)
                     )
                 )
                 sender.sendMessage(
-                    ChatColor.translateAlternateColorCodes(
-                        '&',
-                        plugin.config.getString(prefix) + plugin.config.getString("Success")?.replace(
-                            "%person%",
-                            args[0]
-                        )
+                    CC.translate(
+                        plugin.config.getString(prefix) + plugin.config.getString("Success")
+                            ?.replace("%person%", args[0])
                     )
                 )
             }
         } else if (!sender.hasPermission(global) && args.isEmpty() || !sender.hasPermission(player) && args.isNotEmpty()) {
             sender.sendMessage(
                 plugin.config.getString("NoPermission")?.let {
-                    ChatColor.translateAlternateColorCodes(
-                        '&', it.replace(send, sender.name)
+                    CC.translate(
+                        it.replace(send, sender.name)
                     )
                 }
             )
