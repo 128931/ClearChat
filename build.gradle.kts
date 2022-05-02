@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github"
-version = "1.01"
+version = "1.02"
 
 val kotlinJvmTarget = JavaVersion.toVersion(8)
 
