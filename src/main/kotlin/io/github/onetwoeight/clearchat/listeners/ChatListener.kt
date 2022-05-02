@@ -22,7 +22,7 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
         val player = "cc.player"
         if (sender.hasPermission(global) && args.isEmpty()) {
             for (i in 0..999) {
-                Bukkit.broadcastMessage(rsg(10))
+                Bukkit.broadcastMessage(nextSpace(10))
             }
             Bukkit.broadcastMessage(
                 CC.translate(
@@ -32,7 +32,7 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
         } else if (sender.hasPermission(player) && args.size == 1) {
             for (i in 0..999) {
                 if (Bukkit.getPlayer(args[0])?.isOnline == true) {
-                    Bukkit.getPlayer(args[0])?.sendMessage(rsg(10))
+                    Bukkit.getPlayer(args[0])?.sendMessage(nextSpace(10))
                 } else {
                     sender.sendMessage("${ChatColor.RED}Could not find specified player${ChatColor.RESET}")
                     break
@@ -76,7 +76,7 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
      * @return String with a random amount of spaces
      */
     @Suppress("KDocUnresolvedReference", "SameParameterValue")
-    private fun rsg(length: Int): String {
+    private fun nextSpace(length: Int): String {
         val random = Random.nextInt(length)
         val spaces = StringBuilder(random)
         for (i in 0..random) {

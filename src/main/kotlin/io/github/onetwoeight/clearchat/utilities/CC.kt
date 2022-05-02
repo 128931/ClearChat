@@ -16,7 +16,5 @@ object CC {
      * @param textToTranslate Text containing the alternate color code character.
      * @return Text containing the ChatColor.COLOR_CODE color code character.
      */
-    fun translate(textToTranslate: String): String {
-        return ChatColor.translateAlternateColorCodes('&', textToTranslate)
-    }
+    fun translate(textToTranslate: String) = ChatColor.translateAlternateColorCodes('&', textToTranslate)
 }
