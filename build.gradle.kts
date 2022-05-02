@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github"
-version = "1.0"
+version = "1.01"
 
 val kotlinJvmTarget = JavaVersion.toVersion(8)
 
@@ -24,7 +24,6 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:23.0.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation(kotlin("test"))
 }
 
