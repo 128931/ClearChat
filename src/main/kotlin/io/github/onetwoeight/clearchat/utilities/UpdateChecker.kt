@@ -13,7 +13,7 @@ class UpdateChecker(private val resourceId: Int) {
     fun getLatestVersion(consumer: Consumer<String>) {
         URL("https://api.spigotmc.org/legacy/update.php?resource=$resourceId").openStream()
             .use { it ->
-                Scanner(it).use {
+                Scanner(it, Charsets.UTF_8).use {
                     if (it.hasNext()) {
                         consumer.accept(it.next())
                     }
