@@ -25,8 +25,9 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
                 Bukkit.broadcastMessage(rsg(10))
             }
             Bukkit.broadcastMessage(
-                CC.translate(plugin.config.getString(prefix) + plugin.config.getString("Global"))
-                    .replace(send, sender.name)
+                CC.translate(
+                    plugin.config.getString(prefix) + plugin.config.getString("Global")?.replace(send, sender.name)
+                )
             )
         } else if (sender.hasPermission(player) && args.size == 1) {
             for (i in 0..999) {
@@ -52,11 +53,9 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
             }
         } else if (!sender.hasPermission(global) && args.isEmpty() || !sender.hasPermission(player) && args.isNotEmpty()) {
             sender.sendMessage(
-                plugin.config.getString("NoPermission")?.let {
-                    CC.translate(
-                        it.replace(send, sender.name)
-                    )
-                }
+                CC.translate(
+                    plugin.config.getString("NoPermission")?.replace(send, sender.name).toString()
+                )
             )
         } else if (sender.hasPermission(player) && args.size > 1) {
             sender.sendMessage("${ChatColor.RED}Please refrain from using 2 or more args${ChatColor.RESET}")
