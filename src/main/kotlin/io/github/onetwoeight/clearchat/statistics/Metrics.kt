@@ -77,10 +77,10 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             enabled,
             { builder: JsonObjectBuilder -> appendPlatformData(builder) },
             { builder: JsonObjectBuilder -> appendServiceData(builder) },
-            { submitDataTask: Runnable? -> submitDataTask?.let { Bukkit.getScheduler().runTask(plugin, it) } },
+            { submitDataTask: Runnable -> submitDataTask.let { Bukkit.getScheduler().runTask(plugin, it) } },
             { plugin.isEnabled },
-            { message: String?, error: Throwable? -> this.plugin.logger.log(Level.WARNING, message, error) },
-            { message: String? -> this.plugin.logger.info(message) },
+            { message: String, error: Throwable -> this.plugin.logger.log(Level.WARNING, message, error) },
+            { message: String -> this.plugin.logger.info(message) },
             logErrors,
             logSentData,
             logResponseStatusText
@@ -126,10 +126,10 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
         private val enabled: Boolean,
         private val appendPlatformDataConsumer: Consumer<JsonObjectBuilder>,
         private val appendServiceDataConsumer: Consumer<JsonObjectBuilder>,
-        private val submitTaskConsumer: Consumer<Runnable?>?,
+        private val submitTaskConsumer: Consumer<Runnable>,
         private val checkServiceEnabledSupplier: Supplier<Boolean>,
-        private val errorLogger: BiConsumer<String?, Throwable?>,
-        private val infoLogger: Consumer<String?>,
+        private val errorLogger: BiConsumer<String, Throwable>,
+        private val infoLogger: Consumer<String>,
         private val logErrors: Boolean,
         private val logSentData: Boolean,
         private val logResponseStatusText: Boolean
@@ -151,11 +151,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
                     scheduler.shutdown()
                     return@Runnable
                 }
-                if (submitTaskConsumer != null) {
-                    submitTaskConsumer.accept(Runnable { submitData() })
-                } else {
-                    submitData()
-                }
+                submitTaskConsumer.accept(Runnable { submitData() })
             }
 
             /*
@@ -218,7 +214,8 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             DataOutputStream(connection.outputStream).use { outputStream -> outputStream.write(compressedData) }
             val builder = StringBuilder()
             BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { bufferedReader ->
-                var line: String
+                // NOTICE: Removing the ability to allow for null values breaks the bStats config boolean "logResponseStatusText"
+                var line: String?
                 while (bufferedReader.readLine().also { line = it } != null) {
                     builder.append(line)
                 }
@@ -230,7 +227,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
 
         companion object {
             private val scheduler =
-                Executors.newScheduledThreadPool(1) { task: Runnable? -> Thread(task, "bStats-Metrics") }
+                Executors.newScheduledThreadPool(1) { task: Runnable -> Thread(task, "bStats-Metrics") }
 
             /**
              * Zips the given string.
@@ -255,7 +252,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
      * for its use-case.
      */
     private class JsonObjectBuilder {
-        private var builder: StringBuilder = StringBuilder()
+        private val builder: StringBuilder = StringBuilder()
         private var hasAtLeastOneField = false
 
         init {
