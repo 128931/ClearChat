@@ -78,10 +78,10 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
     @Suppress("KDocUnresolvedReference", "SameParameterValue")
     private fun nextSpace(length: Int): String {
         val random = Random.nextInt(length)
-        val spaces = StringBuilder(random)
+        val builder = StringBuilder(random)
         for (i in 0..random) {
-            spaces.append(" ")
+            builder.append(" ")
         }
-        return spaces.toString()
+        return builder.toString()
     }
 }
