@@ -80,7 +80,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             { submitDataTask: Runnable? -> submitDataTask?.let { Bukkit.getScheduler().runTask(plugin, it) } },
             { plugin.isEnabled },
             { message: String?, error: Throwable? -> this.plugin.logger.log(Level.WARNING, message, error) },
-            { message: String? -> this.plugin.logger.log(Level.INFO, message) },
+            { message: String? -> this.plugin.logger.info(message) },
             logErrors,
             logSentData,
             logResponseStatusText
@@ -218,7 +218,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             DataOutputStream(connection.outputStream).use { outputStream -> outputStream.write(compressedData) }
             val builder = StringBuilder()
             BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { bufferedReader ->
-                var line: String?
+                var line: String
                 while (bufferedReader.readLine().also { line = it } != null) {
                     builder.append(line)
                 }
@@ -239,10 +239,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
              * @return The gzipped string.
              */
             @Throws(IOException::class)
-            private fun compress(str: String?): ByteArray {
-                if (str == null) {
-                    return ByteArray(0)
-                }
+            private fun compress(str: String): ByteArray {
                 val outputStream = ByteArrayOutputStream()
                 GZIPOutputStream(outputStream).use { gzip -> gzip.write(str.toByteArray(StandardCharsets.UTF_8)) }
                 return outputStream.toByteArray()
@@ -270,7 +267,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          *
          * @param key The key of the field.
          */
-        fun appendField(key: String?) {
+        fun appendField(key: String) {
             appendFieldUnescaped(key, "[" + "]")
         }
 
@@ -280,8 +277,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        fun appendField(key: String, value: String?) {
-            requireNotNull(value) { "JSON value must not be null" }
+        fun appendField(key: String, value: String) {
             appendFieldUnescaped(key, "\"" + escape(value) + "\"")
         }
 
@@ -301,8 +297,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key    The key of the field.
          * @param object The object.
          */
-        fun appendField(key: String, `object`: JsonObject?) {
-            requireNotNull(`object`) { "JSON object must not be null" }
+        fun appendField(key: String, `object`: JsonObject) {
             appendFieldUnescaped(key, `object`.toString())
         }
 
@@ -312,12 +307,11 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key          The key of the field.
          * @param escapedValue The escaped value of the field.
          */
-        private fun appendFieldUnescaped(key: String?, escapedValue: String) {
-            requireNotNull(key) { "JSON key must not be null" }
+        private fun appendFieldUnescaped(key: String, escapedValue: String) {
             if (hasAtLeastOneField) {
                 builder.append(",")
             }
-            builder.append("\"")?.append(escape(key))?.append("\":")?.append(escapedValue)
+            builder.append("\"").append(escape(key)).append("\":").append(escapedValue)
             hasAtLeastOneField = true
         }
 
