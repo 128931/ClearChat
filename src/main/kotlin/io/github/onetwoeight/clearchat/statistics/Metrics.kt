@@ -77,10 +77,10 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             enabled,
             { builder: JsonObjectBuilder -> appendPlatformData(builder) },
             { builder: JsonObjectBuilder -> appendServiceData(builder) },
-            { submitDataTask: Runnable -> submitDataTask.let { Bukkit.getScheduler().runTask(plugin, it) } },
+            { submitDataTask: Runnable? -> submitDataTask?.let { Bukkit.getScheduler().runTask(plugin, it) } },
             { plugin.isEnabled },
-            { message: String, error: Throwable -> this.plugin.logger.log(Level.WARNING, message, error) },
-            { message: String -> this.plugin.logger.info(message) },
+            { message: String?, error: Throwable? -> this.plugin.logger.log(Level.WARNING, message, error) },
+            { message: String? -> this.plugin.logger.log(Level.INFO, message) },
             logErrors,
             logSentData,
             logResponseStatusText
@@ -126,10 +126,10 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
         private val enabled: Boolean,
         private val appendPlatformDataConsumer: Consumer<JsonObjectBuilder>,
         private val appendServiceDataConsumer: Consumer<JsonObjectBuilder>,
-        private val submitTaskConsumer: Consumer<Runnable>,
+        private val submitTaskConsumer: Consumer<Runnable?>?,
         private val checkServiceEnabledSupplier: Supplier<Boolean>,
-        private val errorLogger: BiConsumer<String, Throwable>,
-        private val infoLogger: Consumer<String>,
+        private val errorLogger: BiConsumer<String?, Throwable?>,
+        private val infoLogger: Consumer<String?>,
         private val logErrors: Boolean,
         private val logSentData: Boolean,
         private val logResponseStatusText: Boolean
@@ -151,7 +151,11 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
                     scheduler.shutdown()
                     return@Runnable
                 }
-                submitTaskConsumer.accept(Runnable { submitData() })
+                if (submitTaskConsumer != null) {
+                    submitTaskConsumer.accept(Runnable { submitData() })
+                } else {
+                    submitData()
+                }
             }
 
             /*
@@ -214,7 +218,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             DataOutputStream(connection.outputStream).use { outputStream -> outputStream.write(compressedData) }
             val builder = StringBuilder()
             BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { bufferedReader ->
-                var line: String
+                var line: String?
                 while (bufferedReader.readLine().also { line = it } != null) {
                     builder.append(line)
                 }
@@ -226,7 +230,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
 
         companion object {
             private val scheduler =
-                Executors.newScheduledThreadPool(1) { task: Runnable -> Thread(task, "bStats-Metrics") }
+                Executors.newScheduledThreadPool(1) { task: Runnable? -> Thread(task, "bStats-Metrics") }
 
             /**
              * Zips the given string.
@@ -235,7 +239,10 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
              * @return The gzipped string.
              */
             @Throws(IOException::class)
-            private fun compress(str: String): ByteArray {
+            private fun compress(str: String?): ByteArray {
+                if (str == null) {
+                    return ByteArray(0)
+                }
                 val outputStream = ByteArrayOutputStream()
                 GZIPOutputStream(outputStream).use { gzip -> gzip.write(str.toByteArray(StandardCharsets.UTF_8)) }
                 return outputStream.toByteArray()
@@ -263,7 +270,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          *
          * @param key The key of the field.
          */
-        fun appendField(key: String) {
+        fun appendField(key: String?) {
             appendFieldUnescaped(key, "[" + "]")
         }
 
@@ -273,7 +280,8 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        fun appendField(key: String, value: String) {
+        fun appendField(key: String, value: String?) {
+            requireNotNull(value) { "JSON value must not be null" }
             appendFieldUnescaped(key, "\"" + escape(value) + "\"")
         }
 
@@ -293,7 +301,8 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key    The key of the field.
          * @param object The object.
          */
-        fun appendField(key: String, `object`: JsonObject) {
+        fun appendField(key: String, `object`: JsonObject?) {
+            requireNotNull(`object`) { "JSON object must not be null" }
             appendFieldUnescaped(key, `object`.toString())
         }
 
@@ -303,11 +312,12 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key          The key of the field.
          * @param escapedValue The escaped value of the field.
          */
-        private fun appendFieldUnescaped(key: String, escapedValue: String) {
+        private fun appendFieldUnescaped(key: String?, escapedValue: String) {
+            requireNotNull(key) { "JSON key must not be null" }
             if (hasAtLeastOneField) {
                 builder.append(",")
             }
-            builder.append("\"").append(escape(key)).append("\":").append(escapedValue)
+            builder.append("\"")?.append(escape(key))?.append("\":")?.append(escapedValue)
             hasAtLeastOneField = true
         }
 
