@@ -2,7 +2,6 @@ package io.github.onetwoeight.clearchat.statistics
 
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.*
 import java.lang.reflect.InvocationTargetException
@@ -24,14 +23,12 @@ import javax.net.ssl.HttpsURLConnection
  * @author BtoBastian
  * @since 2/17/2017
  */
-class Metrics(plugin: JavaPlugin, serviceId: Int) {
-    private val plugin: Plugin
+class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
 
     /**
      * Creates a new Metrics instance.
      */
     init {
-        this.plugin = plugin
         // Get the config file
         val bStatsFolder = File(plugin.dataFolder.parentFile, "bStats")
         val configFile = File(bStatsFolder, "config.yml")
@@ -39,7 +36,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
         val serverUuid = "serverUuid"
         if (!config.isSet(serverUuid)) {
             config.addDefault("enabled", true)
-            config.addDefault(serverUuid, UUID.randomUUID())
+            config.addDefault(serverUuid, UUID.randomUUID().toString())
             config.addDefault("logFailedRequests", false)
             config.addDefault("logSentData", false)
             config.addDefault("logResponseStatusText", false)
@@ -64,7 +61,7 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             try {
                 config.save(configFile)
             } catch (e: IOException) {
-                this.plugin.getLogger().log(Level.WARNING, e.toString())
+                this.plugin.logger.warning(e.toString())
             }
         }
         // Load the data
@@ -82,8 +79,8 @@ class Metrics(plugin: JavaPlugin, serviceId: Int) {
             { builder: JsonObjectBuilder -> appendServiceData(builder) },
             { submitDataTask: Runnable? -> submitDataTask?.let { Bukkit.getScheduler().runTask(plugin, it) } },
             { plugin.isEnabled },
-            { message: String?, error: Throwable? -> this.plugin.getLogger().log(Level.WARNING, message, error) },
-            { message: String? -> this.plugin.getLogger().log(Level.INFO, message) },
+            { message: String?, error: Throwable? -> this.plugin.logger.log(Level.WARNING, message, error) },
+            { message: String? -> this.plugin.logger.log(Level.INFO, message) },
             logErrors,
             logSentData,
             logResponseStatusText
