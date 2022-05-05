@@ -4,6 +4,7 @@ import io.github.onetwoeight.clearchat.listeners.ChatListener
 import io.github.onetwoeight.clearchat.statistics.Metrics
 import org.bukkit.plugin.java.JavaPlugin
 
+
 /**
  * @author onetwoeight
  * @since 4/14/2022
