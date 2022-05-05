@@ -6,7 +6,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.*
 import java.lang.reflect.InvocationTargetException
 import java.net.URL
-import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -62,7 +61,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             try {
                 config.save(configFile)
             } catch (e: IOException) {
-                this.plugin.logger.warning(e.toString())
+                this.plugin.logger.warning("$e")
             }
         }
         // Load the data
@@ -203,7 +202,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             val url = "https://bStats.org/api/v2/data/$platform"
             val connection = URL(url).openConnection() as HttpsURLConnection
             // Compress the data to save bandwidth
-            val compressedData = compress(data.toString())
+            val compressedData = compress("$data")
             connection.requestMethod = "POST"
             connection.addRequestProperty("Accept", "application/json")
             connection.addRequestProperty("Connection", "close")
@@ -214,10 +213,10 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             connection.doOutput = true
             DataOutputStream(connection.outputStream).use { outputStream -> outputStream.write(compressedData) }
             val builder = StringBuilder()
-            BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { bufferedReader ->
+            BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { it ->
                 // NOTICE: Removing the ability to allow for null values breaks the bStats config boolean "logResponseStatusText"
                 var line: String?
-                while (bufferedReader.readLine().also { line = it } != null) {
+                while (it.readLine().also { line = it } != null) {
                     builder.append(line)
                 }
             }
@@ -239,7 +238,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             @Throws(IOException::class)
             private fun compress(str: String): ByteArray {
                 val outputStream = ByteArrayOutputStream()
-                GZIPOutputStream(outputStream).use { gzip -> gzip.write(str.toByteArray(StandardCharsets.UTF_8)) }
+                GZIPOutputStream(outputStream).use { it.write(str.toByteArray(Charsets.UTF_8)) }
                 return outputStream.toByteArray()
             }
         }
@@ -265,9 +264,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          *
          * @param key The key of the field.
          */
-        fun appendField(key: String) {
-            appendFieldUnescaped(key, "[" + "]")
-        }
+        fun appendField(key: String) = appendFieldUnescaped(key, "[" + "]")
 
         /**
          * Appends a string field to the JSON.
@@ -275,9 +272,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        fun appendField(key: String, value: String) {
-            appendFieldUnescaped(key, "\"" + escape(value) + "\"")
-        }
+        fun appendField(key: String, value: String) = appendFieldUnescaped(key, "\"" + escape(value) + "\"")
 
         /**
          * Appends an integer field to the JSON.
@@ -285,9 +280,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        fun appendField(key: String, value: Int) {
-            appendFieldUnescaped(key, value.toString())
-        }
+        fun appendField(key: String, value: Int) = appendFieldUnescaped(key, "$value")
 
         /**
          * Appends an object to the JSON.
@@ -295,9 +288,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key    The key of the field.
          * @param object The object.
          */
-        fun appendField(key: String, `object`: JsonObject) {
-            appendFieldUnescaped(key, `object`.toString())
-        }
+        fun appendField(key: String, `object`: JsonObject) = appendFieldUnescaped(key, "$`object`")
 
         /**
          * Appends a field to the object.
@@ -334,9 +325,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * allow a raw string inputs for methods like [JsonObjectBuilder.appendField].
          */
         class JsonObject(private val value: String) {
-            override fun toString(): String {
-                return value
-            }
+            override fun toString(): String = value
         }
 
         companion object {
@@ -365,7 +354,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
                         builder.append(element)
                     }
                 }
-                return builder.toString()
+                return "$builder"
             }
         }
     }
