@@ -75,12 +75,12 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             serverUUID.toString(),
             serviceId,
             enabled,
-            { builder: JsonObjectBuilder -> appendPlatformData(builder) },
-            { builder: JsonObjectBuilder -> appendServiceData(builder) },
-            { submitDataTask: Runnable -> submitDataTask.let { Bukkit.getScheduler().runTask(plugin, it) } },
+            { builder -> appendPlatformData(builder) },
+            { builder -> appendServiceData(builder) },
+            { submitDataTask -> submitDataTask.let { Bukkit.getScheduler().runTask(plugin, it) } },
             { plugin.isEnabled },
-            { message: String, error: Throwable -> this.plugin.logger.log(Level.WARNING, message, error) },
-            { message: String -> this.plugin.logger.info(message) },
+            { message, error -> this.plugin.logger.log(Level.WARNING, message, error) },
+            { message -> this.plugin.logger.info(message) },
             logErrors,
             logSentData,
             logResponseStatusText
@@ -151,7 +151,9 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
                     scheduler.shutdown()
                     return@Runnable
                 }
-                submitTaskConsumer.accept(Runnable { submitData() })
+                submitTaskConsumer.accept(Runnable {
+                    submitData()
+                })
             }
 
             /*
@@ -211,7 +213,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             connection.setRequestProperty("Content-Type", "application/json")
             connection.setRequestProperty("User-Agent", "Metrics-Service/1")
             connection.doOutput = true
-            DataOutputStream(connection.outputStream).use { outputStream -> outputStream.write(compressedData) }
+            DataOutputStream(connection.outputStream).use { it.write(compressedData) }
             val builder = StringBuilder()
             BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { it ->
                 // NOTICE: Removing the ability to allow for null values breaks the bStats config boolean "logResponseStatusText"
@@ -227,7 +229,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
 
         companion object {
             private val scheduler =
-                Executors.newScheduledThreadPool(1) { task: Runnable -> Thread(task, "bStats-Metrics") }
+                Executors.newScheduledThreadPool(1) { Thread(it, "bStats-Metrics") }
 
             /**
              * Zips the given string.
@@ -264,7 +266,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          *
          * @param key The key of the field.
          */
-        fun appendField(key: String) = appendFieldUnescaped(key, "[" + "]")
+        fun appendField(key: String) = appendFieldUnescaped(key, "[]")
 
         /**
          * Appends a string field to the JSON.
@@ -272,7 +274,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * @param key   The key of the field.
          * @param value The value of the field.
          */
-        fun appendField(key: String, value: String) = appendFieldUnescaped(key, "\"" + escape(value) + "\"")
+        fun appendField(key: String, value: String) = appendFieldUnescaped(key, "\"${escape(value)}\"")
 
         /**
          * Appends an integer field to the JSON.
@@ -325,7 +327,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
          * allow a raw string inputs for methods like [JsonObjectBuilder.appendField].
          */
         class JsonObject(private val value: String) {
-            override fun toString(): String = value
+            override fun toString() = value
         }
 
         companion object {
@@ -341,17 +343,17 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
              */
             private fun escape(value: String): String {
                 val builder = StringBuilder()
-                for (element in value) {
-                    if (element == '"') {
+                value.forEach {
+                    if (it == '"') {
                         builder.append("\\\"")
-                    } else if (element == '\\') {
+                    } else if (it == '\\') {
                         builder.append("\\\\")
-                    } else if (element <= '\u000F') {
-                        builder.append("\\u000").append(Integer.toHexString(element.code))
-                    } else if (element <= '\u001F') {
-                        builder.append("\\u00").append(Integer.toHexString(element.code))
+                    } else if (it <= '\u000F') {
+                        builder.append("\\u000").append(Integer.toHexString(it.code))
+                    } else if (it <= '\u001F') {
+                        builder.append("\\u00").append(Integer.toHexString(it.code))
                     } else {
-                        builder.append(element)
+                        builder.append(it)
                     }
                 }
                 return "$builder"
