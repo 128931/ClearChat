@@ -61,7 +61,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             try {
                 config.save(configFile)
             } catch (e: IOException) {
-                this.plugin.logger.warning("$e")
+                plugin.logger.warning("$e")
             }
         }
         // Load the data
@@ -75,12 +75,12 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             serverUUID.toString(),
             serviceId,
             enabled,
-            { builder -> appendPlatformData(builder) },
-            { builder -> appendServiceData(builder) },
+            ::appendPlatformData,
+            ::appendServiceData,
             { submitDataTask -> submitDataTask.let { Bukkit.getScheduler().runTask(plugin, it) } },
             { plugin.isEnabled },
-            { message, error -> this.plugin.logger.log(Level.WARNING, message, error) },
-            { message -> this.plugin.logger.info(message) },
+            { message, error -> plugin.logger.log(Level.WARNING, message, error) },
+            plugin.logger::info,
             logErrors,
             logSentData,
             logResponseStatusText
@@ -213,7 +213,9 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             connection.setRequestProperty("Content-Type", "application/json")
             connection.setRequestProperty("User-Agent", "Metrics-Service/1")
             connection.doOutput = true
-            DataOutputStream(connection.outputStream).use { it.write(compressedData) }
+            DataOutputStream(connection.outputStream).use {
+                it.write(compressedData)
+            }
             val builder = StringBuilder()
             BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { it ->
                 // NOTICE: Removing the ability to allow for null values breaks the bStats config boolean "logResponseStatusText"
@@ -229,7 +231,9 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
 
         companion object {
             private val scheduler =
-                Executors.newScheduledThreadPool(1) { Thread(it, "bStats-Metrics") }
+                Executors.newScheduledThreadPool(1) {
+                    Thread(it, "bStats-Metrics")
+                }
 
             /**
              * Zips the given string.
@@ -240,7 +244,9 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             @Throws(IOException::class)
             private fun compress(str: String): ByteArray {
                 val outputStream = ByteArrayOutputStream()
-                GZIPOutputStream(outputStream).use { it.write(str.toByteArray(Charsets.UTF_8)) }
+                GZIPOutputStream(outputStream).use {
+                    it.write(str.toByteArray(Charsets.UTF_8))
+                }
                 return outputStream.toByteArray()
             }
         }
