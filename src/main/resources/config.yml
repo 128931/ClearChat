@@ -14,7 +14,7 @@ Global: '&cThe chat was cleared by %sender%&r'
 Player: '&cYour chat was cleared by %sender%&r'
 
 # After successfully clearing someone's chat, this message will be delivered to the %sender%.
-Success: "&cYou successfully cleared %person%'s chat&r"
+Success: "&cYou successfully cleared %person%'s chat &r"
 
 # The message that will be sent if the person who performed the command does not have the necessary permissions.
 NoPermission: '&cYou do not have permission to do that&r'
