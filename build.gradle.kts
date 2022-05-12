@@ -34,12 +34,12 @@ dependencies {
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = kotlinJvmTarget.toString()
+            jvmTarget = "$kotlinJvmTarget"
         }
     }
     compileTestKotlin {
         kotlinOptions {
-            jvmTarget = kotlinJvmTarget.toString()
+            jvmTarget = "$kotlinJvmTarget"
         }
     }
     processResources {
