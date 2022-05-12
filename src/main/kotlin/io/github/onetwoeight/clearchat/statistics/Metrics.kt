@@ -20,12 +20,15 @@ import javax.net.ssl.HttpsURLConnection
 
 
 /**
- * Code Converted to Kotlin by 128931 at 4/24/2022
+ * The code was converted to Kotlin and cleaned up by 128931.
  *
  * @author BtoBastian
  * @since 2/17/2017
  */
-class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
+class Metrics(
+    private val plugin: JavaPlugin,
+    serviceId: Int
+) {
 
     /**
      * Creates a new Metrics instance.
@@ -63,7 +66,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             try {
                 config.save(configFile)
             } catch (e: IOException) {
-                plugin.logger.warning("$e")
+                plugin.logger.severe("$e")
             }
         }
         // Load the data
@@ -77,12 +80,12 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
             serverUUID.toString(),
             serviceId,
             enabled,
-            ::appendPlatformData,
-            ::appendServiceData,
-            { submitDataTask -> submitDataTask.let { Bukkit.getScheduler().runTask(plugin, it) } },
-            { plugin.isEnabled },
-            { message, error -> plugin.logger.log(Level.WARNING, message, error) },
-            plugin.logger::info,
+            appendPlatformDataConsumer = ::appendPlatformData,
+            appendServiceDataConsumer = ::appendServiceData,
+            submitTaskConsumer = { it.let { Bukkit.getScheduler().runTask(plugin, it) } },
+            checkServiceEnabledSupplier = { plugin.isEnabled },
+            errorLogger = { message, error -> plugin.logger.log(Level.WARNING, message, error) },
+            infoLogger = plugin.logger::info,
             logErrors,
             logSentData,
             logResponseStatusText
