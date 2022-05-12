@@ -1,5 +1,7 @@
 package io.github.onetwoeight.clearchat.statistics
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -87,20 +89,20 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
         )
     }
 
-    private fun appendPlatformData(builder: JsonObjectBuilder) {
-        builder.appendField("playerAmount", playerAmount)
-        builder.appendField("onlineMode", if (Bukkit.getOnlineMode()) 1 else 0)
-        builder.appendField("bukkitVersion", Bukkit.getVersion())
-        builder.appendField("bukkitName", Bukkit.getName())
-        builder.appendField("javaVersion", System.getProperty("java.version"))
-        builder.appendField("osName", System.getProperty("os.name"))
-        builder.appendField("osArch", System.getProperty("os.arch"))
-        builder.appendField("osVersion", System.getProperty("os.version"))
-        builder.appendField("coreCount", Runtime.getRuntime().availableProcessors())
+    private fun appendPlatformData(builder: JsonObject) {
+        builder.addProperty("playerAmount", playerAmount)
+        builder.addProperty("onlineMode", if (Bukkit.getOnlineMode()) 1 else 0)
+        builder.addProperty("bukkitVersion", Bukkit.getVersion())
+        builder.addProperty("bukkitName", Bukkit.getName())
+        builder.addProperty("javaVersion", System.getProperty("java.version"))
+        builder.addProperty("osName", System.getProperty("os.name"))
+        builder.addProperty("osArch", System.getProperty("os.arch"))
+        builder.addProperty("osVersion", System.getProperty("os.version"))
+        builder.addProperty("coreCount", Runtime.getRuntime().availableProcessors())
     }
 
-    private fun appendServiceData(builder: JsonObjectBuilder) {
-        builder.appendField("pluginVersion", plugin.description.version)
+    private fun appendServiceData(builder: JsonObject) {
+        builder.addProperty("pluginVersion", plugin.description.version)
     }
 
     private val playerAmount: Int
@@ -124,8 +126,8 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
         private val serverUuid: String,
         private val serviceId: Int,
         private val enabled: Boolean,
-        private val appendPlatformDataConsumer: Consumer<JsonObjectBuilder>,
-        private val appendServiceDataConsumer: Consumer<JsonObjectBuilder>,
+        private val appendPlatformDataConsumer: Consumer<JsonObject>,
+        private val appendServiceDataConsumer: Consumer<JsonObject>,
         private val submitTaskConsumer: Consumer<Runnable>,
         private val checkServiceEnabledSupplier: Supplier<Boolean>,
         private val errorLogger: BiConsumer<String, Throwable>,
@@ -173,20 +175,19 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
         }
 
         private fun submitData() {
-            val baseJsonBuilder = JsonObjectBuilder()
+            val baseJsonBuilder = JsonObject()
             appendPlatformDataConsumer.accept(baseJsonBuilder)
-            val serviceJsonBuilder = JsonObjectBuilder()
+            val serviceJsonBuilder = JsonObject()
             appendServiceDataConsumer.accept(serviceJsonBuilder)
-            serviceJsonBuilder.appendField("id", serviceId)
-            serviceJsonBuilder.appendField("customCharts")
-            baseJsonBuilder.appendField("service", serviceJsonBuilder.build())
-            baseJsonBuilder.appendField("serverUUID", serverUuid)
-            baseJsonBuilder.appendField("metricsVersion", "3.0.0")
-            val data = baseJsonBuilder.build()
+            serviceJsonBuilder.addProperty("id", serviceId)
+            serviceJsonBuilder.add("customCharts", JsonArray())
+            baseJsonBuilder.add("service", serviceJsonBuilder)
+            baseJsonBuilder.addProperty("serverUUID", serverUuid)
+            baseJsonBuilder.addProperty("metricsVersion", "3.0.0")
             scheduler.execute {
                 try {
                     // Send the data
-                    sendData(data)
+                    sendData(baseJsonBuilder)
                 } catch (e: IOException) {
                     // Something went wrong! :(
                     if (logErrors) {
@@ -197,7 +198,7 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
         }
 
         @Throws(IOException::class)
-        private fun sendData(data: JsonObjectBuilder.JsonObject) {
+        private fun sendData(data: JsonObject) {
             if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: $data")
             }
@@ -248,121 +249,6 @@ class Metrics(private val plugin: JavaPlugin, serviceId: Int) {
                     it.write(str.toByteArray(Charsets.UTF_8))
                 }
                 return outputStream.toByteArray()
-            }
-        }
-    }
-
-    /**
-     * An extremely simple JSON builder.
-     *
-     *
-     * While this class is neither feature-rich nor the most performant one, it's sufficient
-     * for its use-case.
-     */
-    private class JsonObjectBuilder {
-        private val builder: StringBuilder = StringBuilder()
-        private var hasAtLeastOneField = false
-
-        init {
-            builder.append("{")
-        }
-
-        /**
-         * Appends an object array to the JSON.
-         *
-         * @param key The key of the field.
-         */
-        fun appendField(key: String) = appendFieldUnescaped(key, "[]")
-
-        /**
-         * Appends a string field to the JSON.
-         *
-         * @param key   The key of the field.
-         * @param value The value of the field.
-         */
-        fun appendField(key: String, value: String) = appendFieldUnescaped(key, "\"${escape(value)}\"")
-
-        /**
-         * Appends an integer field to the JSON.
-         *
-         * @param key   The key of the field.
-         * @param value The value of the field.
-         */
-        fun appendField(key: String, value: Int) = appendFieldUnescaped(key, "$value")
-
-        /**
-         * Appends an object to the JSON.
-         *
-         * @param key    The key of the field.
-         * @param object The object.
-         */
-        fun appendField(key: String, `object`: JsonObject) = appendFieldUnescaped(key, "$`object`")
-
-        /**
-         * Appends a field to the object.
-         *
-         * @param key          The key of the field.
-         * @param escapedValue The escaped value of the field.
-         */
-        private fun appendFieldUnescaped(key: String, escapedValue: String) {
-            if (hasAtLeastOneField) {
-                builder.append(",")
-            }
-            builder.append("\"").append(escape(key)).append("\":").append(escapedValue)
-            hasAtLeastOneField = true
-        }
-
-        /**
-         * Builds the JSON string and invalidates this builder.
-         *
-         * @return The built JSON string.
-         */
-        fun build(): JsonObject {
-            val `object` = JsonObject(
-                builder.append("}").toString()
-            )
-            builder.setLength(0)
-            return `object`
-        }
-
-        /**
-         * A super simple representation of a JSON object.
-         *
-         *
-         * This class only exists to make methods of the [JsonObjectBuilder] type-safe and not
-         * allow a raw string inputs for methods like [JsonObjectBuilder.appendField].
-         */
-        class JsonObject(private val value: String) {
-            override fun toString() = value
-        }
-
-        companion object {
-            /**
-             * Escapes the given string like stated in https://www.ietf.org/rfc/rfc4627.txt.
-             *
-             *
-             * This method escapes only the necessary characters '"', '\'. and '\u0000' - '\u001F'.
-             * Compact escapes are not used (e.g., '\n' is escaped as "\u000a" and not as "\n").
-             *
-             * @param value The value to escape.
-             * @return The escaped value.
-             */
-            private fun escape(value: String): String {
-                val builder = StringBuilder()
-                value.forEach {
-                    if (it == '"') {
-                        builder.append("\\\"")
-                    } else if (it == '\\') {
-                        builder.append("\\\\")
-                    } else if (it <= '\u000F') {
-                        builder.append("\\u000").append(Integer.toHexString(it.code))
-                    } else if (it <= '\u001F') {
-                        builder.append("\\u00").append(Integer.toHexString(it.code))
-                    } else {
-                        builder.append(it)
-                    }
-                }
-                return "$builder"
             }
         }
     }
