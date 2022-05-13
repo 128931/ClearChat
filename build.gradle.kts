@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.0-Beta"
     id("org.sonarqube") version "3.3"
 }
 
 group = "io.github"
-version = "1.02"
+version = "1.0.3"
 
 val kotlinJvmTarget = JavaVersion.toVersion(8)
 
@@ -19,12 +19,7 @@ repositories {
 }
 
 dependencies {
-    // Can't use exclude with kotlin("stdlib-jdk8").
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21") {
-        exclude(module = "annotations")
-    }
-    // For some reason Kotlin uses version 13.0 which was literally released in Dec 17, 2013.
-    implementation("org.jetbrains:annotations:23.0.0")
+    implementation(kotlin("stdlib-jdk8"))
 
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
 
