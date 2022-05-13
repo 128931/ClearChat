@@ -63,11 +63,7 @@ class Metrics(
                     """.trimIndent()
                 )
                 .copyDefaults(true)
-            try {
-                config.save(configFile)
-            } catch (e: IOException) {
-                plugin.logger.severe("$e")
-            }
+            config.save(configFile)
         }
         // Load the data
         val enabled = config.getBoolean("enabled", true)
@@ -200,7 +196,6 @@ class Metrics(
             }
         }
 
-        @Throws(IOException::class)
         private fun sendData(data: JsonObject) {
             if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: $data")
@@ -245,7 +240,6 @@ class Metrics(
              * @param str The string to gzip.
              * @return The gzipped string.
              */
-            @Throws(IOException::class)
             private fun compress(str: String): ByteArray {
                 val outputStream = ByteArrayOutputStream()
                 GZIPOutputStream(outputStream).use {
