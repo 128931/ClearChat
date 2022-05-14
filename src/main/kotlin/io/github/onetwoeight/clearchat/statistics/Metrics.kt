@@ -78,7 +78,7 @@ class Metrics(
             enabled,
             appendPlatformDataConsumer = ::appendPlatformData,
             appendServiceDataConsumer = ::appendServiceData,
-            submitTaskConsumer = { it.let { Bukkit.getScheduler().runTask(plugin, it) } },
+            submitTaskConsumer = { it.let { Bukkit.getScheduler().runTaskAsynchronously(plugin, it) } },
             checkServiceEnabledSupplier = { plugin.isEnabled },
             errorLogger = { message, error -> plugin.logger.log(Level.WARNING, message, error) },
             infoLogger = plugin.logger::info,
