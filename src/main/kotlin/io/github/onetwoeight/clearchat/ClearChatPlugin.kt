@@ -14,10 +14,7 @@ class ClearChatPlugin : JavaPlugin() {
 
     override fun onEnable() {
         saveDefaultConfig()
-        val command = getCommand("cc")
-        if (command != null) {
-            command.setExecutor(ChatListener(this))
-        } else {
+        getCommand("cc")?.setExecutor(ChatListener(this)) ?: run {
             server.consoleSender.sendMessage(
                 CC.translate(
                     "[${description.name}] &cExpression 'getCommand(\"cc\")' must not be null&r"
