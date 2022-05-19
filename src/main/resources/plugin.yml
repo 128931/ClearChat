@@ -11,4 +11,6 @@ commands:
   cc:
     aliases: clearchat
     description: This command is used to clear a single player's or everyone's chat.
+    permission: cc.use
+    permission-message: "§cYou do not have permission to do that§r"
     usage: /<command> [player]
