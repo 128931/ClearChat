@@ -19,9 +19,7 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         val prefix = "Prefix"
         val send = "%sender%"
-        val global = "cc.global"
-        val player = "cc.player"
-        if (sender.hasPermission(global) && args.isEmpty()) {
+        if (args.isEmpty()) {
             for (i in 0..999) {
                 Bukkit.broadcastMessage(Random.nextSpace(16))
             }
@@ -30,7 +28,7 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
                     plugin.config.getString(prefix) + plugin.config.getString("Global")?.replace(send, sender.name)
                 )
             )
-        } else if (sender.hasPermission(player) && args.size == 1) {
+        } else if (args.size == 1) {
             for (i in 0..999) {
                 if (Bukkit.getPlayer(args[0])?.isOnline == true) {
                     Bukkit.getPlayer(args[0])?.sendMessage(Random.nextSpace(16))
@@ -52,13 +50,7 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
                     )
                 )
             }
-        } else if (!sender.hasPermission(global) && args.isEmpty() || !sender.hasPermission(player) && args.isNotEmpty()) {
-            sender.sendMessage(
-                CC.translate(
-                    plugin.config.getString("NoPermission")?.replace(send, sender.name).toString()
-                )
-            )
-        } else if (sender.hasPermission(player) && args.size > 1) {
+        } else if (args.size > 1) {
             sender.sendMessage("${ChatColor.RED}Please refrain from using 2 or more args${ChatColor.RESET}")
         }
         return true
