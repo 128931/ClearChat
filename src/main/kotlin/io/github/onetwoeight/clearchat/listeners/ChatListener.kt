@@ -18,14 +18,13 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         val prefix = "Prefix"
-        val send = "%sender%"
         if (args.isEmpty()) {
             for (i in 0..999) {
                 Bukkit.broadcastMessage(Random.nextSpace(16))
             }
             Bukkit.broadcastMessage(
                 CC.translate(
-                    plugin.config.getString(prefix) + plugin.config.getString("Global")?.replace(send, sender.name)
+                    plugin.config.getString(prefix) + plugin.config.getString("Global")?.replace("%sender%", sender.name)
                 )
             )
         } else if (args.size == 1) {
@@ -40,7 +39,7 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
             if (Bukkit.getPlayer(args[0])?.isOnline == true) {
                 Bukkit.getPlayer(args[0])?.sendMessage(
                     CC.translate(
-                        plugin.config.getString(prefix) + plugin.config.getString("Player")?.replace(send, sender.name)
+                        plugin.config.getString(prefix) + plugin.config.getString("Player")?.replace("%sender%", sender.name)
                     )
                 )
                 sender.sendMessage(
