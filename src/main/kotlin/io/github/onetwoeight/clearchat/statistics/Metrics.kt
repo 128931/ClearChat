@@ -151,8 +151,6 @@ class Metrics(
              */
             CoroutineScope(Dispatchers.Default).launch {
                 // If someone knows a cleaner way to do this please lmk
-                delay(1_800_000L)
-                submitData()
                 while (true) {
                     delay(1_800_000L)
                     submitData()
