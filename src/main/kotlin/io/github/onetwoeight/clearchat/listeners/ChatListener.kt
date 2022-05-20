@@ -24,7 +24,8 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
             }
             Bukkit.broadcastMessage(
                 CC.translate(
-                    plugin.config.getString(prefix) + plugin.config.getString("Global")?.replace("%sender%", sender.name)
+                    plugin.config.getString(prefix) + plugin.config.getString("Global")
+                        ?.replace("%sender%", sender.name)
                 )
             )
         } else if (args.size == 1) {
@@ -39,7 +40,8 @@ class ChatListener(private val plugin: ClearChatPlugin) : CommandExecutor {
             if (Bukkit.getPlayer(args[0])?.isOnline == true) {
                 Bukkit.getPlayer(args[0])?.sendMessage(
                     CC.translate(
-                        plugin.config.getString(prefix) + plugin.config.getString("Player")?.replace("%sender%", sender.name)
+                        plugin.config.getString(prefix) + plugin.config.getString("Player")
+                            ?.replace("%sender%", sender.name)
                     )
                 )
                 sender.sendMessage(
