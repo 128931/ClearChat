@@ -2,6 +2,10 @@ package io.github.onetwoeight.clearchat.statistics
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -9,11 +13,7 @@ import java.io.*
 import java.lang.reflect.InvocationTargetException
 import java.net.URL
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import java.util.function.BiConsumer
 import java.util.function.Consumer
-import java.util.function.Supplier
 import java.util.logging.Level
 import java.util.zip.GZIPOutputStream
 import javax.net.ssl.HttpsURLConnection
@@ -72,16 +72,12 @@ class Metrics(
         val logSentData = config.getBoolean("logSentData", false)
         val logResponseStatusText = config.getBoolean("logResponseStatusText", false)
         MetricsBase(
-            "bukkit",
+            plugin,
             serverUUID.toString(),
             serviceId,
             enabled,
             appendPlatformDataConsumer = ::appendPlatformData,
             appendServiceDataConsumer = ::appendServiceData,
-            submitTaskConsumer = { it.let { Bukkit.getScheduler().runTaskAsynchronously(plugin, it) } },
-            checkServiceEnabledSupplier = { plugin.isEnabled },
-            errorLogger = { message, error -> plugin.logger.log(Level.WARNING, message, error) },
-            infoLogger = plugin.logger::info,
             logErrors,
             logSentData,
             logResponseStatusText
@@ -121,16 +117,12 @@ class Metrics(
         }
 
     private class MetricsBase(
-        private val platform: String,
+        private val plugin: JavaPlugin,
         private val serverUuid: String,
         private val serviceId: Int,
-        private val enabled: Boolean,
+        enabled: Boolean,
         private val appendPlatformDataConsumer: Consumer<JsonObject>,
         private val appendServiceDataConsumer: Consumer<JsonObject>,
-        private val submitTaskConsumer: Consumer<Runnable>,
-        private val checkServiceEnabledSupplier: Supplier<Boolean>,
-        private val errorLogger: BiConsumer<String, Throwable>,
-        private val infoLogger: Consumer<String>,
         private val logErrors: Boolean,
         private val logSentData: Boolean,
         private val logResponseStatusText: Boolean
@@ -146,17 +138,6 @@ class Metrics(
         }
 
         private fun startSubmitting() {
-            val submitTask = Runnable {
-                if (!enabled || java.lang.Boolean.FALSE == checkServiceEnabledSupplier.get()) {
-                    // Submitting data or service is disabled
-                    scheduler.shutdown()
-                    return@Runnable
-                }
-                submitTaskConsumer.accept(Runnable {
-                    submitData()
-                })
-            }
-
             /*
              Instead of using random values that constantly bombard my console with 429 (too many requests) errors,
              we simply set it to send the request every 30 minutes to resolve the problem. Furthermore,
@@ -168,9 +149,15 @@ class Metrics(
              bStats staff if you are concerned with the fact that I transmit a request every 30 minutes, please let me know,
              and I will raise it to 35 minutes since that was the most amount of minutes your rng could make/reach.
              */
-            scheduler.scheduleAtFixedRate(
-                submitTask, 1_800_000L, 1_800_000L, TimeUnit.MILLISECONDS
-            )
+            CoroutineScope(Dispatchers.Default).launch {
+                // If someone knows a cleaner way to do this please lmk
+                delay(1_800_000L)
+                submitData()
+                while (true) {
+                    delay(1_800_000L)
+                    submitData()
+                }
+            }
         }
 
         private fun submitData() {
@@ -183,14 +170,14 @@ class Metrics(
             baseJsonBuilder.add("service", serviceJsonBuilder)
             baseJsonBuilder.addProperty("serverUUID", serverUuid)
             baseJsonBuilder.addProperty("metricsVersion", "3.0.0")
-            scheduler.execute {
+            CoroutineScope(Dispatchers.Default).launch {
                 try {
                     // Send the data
                     sendData(baseJsonBuilder)
                 } catch (e: IOException) {
                     // Something went wrong! :(
                     if (logErrors) {
-                        errorLogger.accept("Could not submit bStats metrics data", e)
+                        plugin.logger.log(Level.WARNING, "Could not submit bStats metrics data", e)
                     }
                 }
             }
@@ -198,9 +185,9 @@ class Metrics(
 
         private fun sendData(data: JsonObject) {
             if (logSentData) {
-                infoLogger.accept("Sent bStats metrics data: $data")
+                plugin.logger.info("Sent bStats metrics data: $data")
             }
-            val url = "https://bStats.org/api/v2/data/$platform"
+            val url = "https://bStats.org/api/v2/data/bukkit"
             val connection = URL(url).openConnection() as HttpsURLConnection
             // Compress the data to save bandwidth
             val compressedData = compress("$data")
@@ -224,29 +211,22 @@ class Metrics(
                 }
             }
             if (logResponseStatusText) {
-                infoLogger.accept("Sent data to bStats and received response: $builder")
+                plugin.logger.info("Sent data to bStats and received response: $builder")
             }
         }
 
-        companion object {
-            private val scheduler =
-                Executors.newScheduledThreadPool(1) {
-                    Thread(it, "bStats-Metrics")
-                }
-
-            /**
-             * Zips the given string.
-             *
-             * @param str The string to gzip.
-             * @return The gzipped string.
-             */
-            private fun compress(str: String): ByteArray {
-                val outputStream = ByteArrayOutputStream()
-                GZIPOutputStream(outputStream).use {
-                    it.write(str.toByteArray(Charsets.UTF_8))
-                }
-                return outputStream.toByteArray()
+        /**
+         * Zips the given string.
+         *
+         * @param str The string to gzip.
+         * @return The gzipped string.
+         */
+        private fun compress(str: String): ByteArray {
+            val outputStream = ByteArrayOutputStream()
+            GZIPOutputStream(outputStream).use {
+                it.write(str.toByteArray(Charsets.UTF_8))
             }
+            return outputStream.toByteArray()
         }
     }
 }

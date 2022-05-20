@@ -20,6 +20,10 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1") {
+        exclude(module = "kotlin-stdlib-common")
+        exclude(module = "kotlin-stdlib-jdk8")
+    }
 
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
 

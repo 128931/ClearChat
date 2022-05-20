@@ -2,6 +2,7 @@ package io.github.onetwoeight.clearchat.utilities
 
 import kotlin.random.Random
 
+
 /**
  * @author onetwoeight
  * @since 5/14/2022
