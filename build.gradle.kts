@@ -57,6 +57,9 @@ tasks {
             "**/*.kotlin_metadata",
             "**/*.kotlin_module",
             "**/*.kotlin_builtins",
+            "**/*.pro",
+            "**/*.version",
+            "**/*.bin",
             "META-INF/maven/**",
             "META-INF/versions/**"
         )

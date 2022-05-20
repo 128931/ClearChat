@@ -76,8 +76,8 @@ class Metrics(
             serverUUID.toString(),
             serviceId,
             enabled,
-            appendPlatformDataConsumer = ::appendPlatformData,
-            appendServiceDataConsumer = ::appendServiceData,
+            ::appendPlatformData,
+            ::appendServiceData,
             logErrors,
             logSentData,
             logResponseStatusText
