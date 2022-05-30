@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1") {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2") {
         exclude(module = "kotlin-stdlib-common")
         exclude(module = "kotlin-stdlib-jdk8")
     }
