@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version "1.7.0-RC"
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube") version "3.4.0.2513"
 }
 
 group = "io.github"
